@@ -10,7 +10,7 @@ class PlayerRepositoryTest {
 
     @Test
     void testFindAllReturnsEmptyList() {
-        PlayerRepository repository = null; // We will instantiate the real repository later
+        PlayerRepository repository = null;
         List<Player> players = repository.findAll();
         assertTrue(players.isEmpty());
     }
