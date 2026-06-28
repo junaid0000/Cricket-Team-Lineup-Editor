@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,6 +27,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
     private JButton addButton;
     private JButton deleteButton;
     private JList<Player> playerList;
+    private DefaultListModel<Player> listModel;
     private JLabel errorMessageLabel;
 
     public PlayerSwingView() {
@@ -74,7 +76,8 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         buttonPanel.add(deleteButton);
         panel.add(buttonPanel);
 
-        playerList = new JList<>();
+        listModel = new DefaultListModel<>();
+        playerList = new JList<>(listModel);
         playerList.setName("playerList");
         JScrollPane scrollPane = new JScrollPane(playerList);
         panel.add(scrollPane);
@@ -88,16 +91,18 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
     @Override
     public void showAllPlayers(List<Player> players) {
-        
+        players.forEach(listModel::addElement);
     }
 
     @Override
     public void playerAdded(Player player) {
-        
+        listModel.addElement(player);
+        errorMessageLabel.setText(" ");
     }
 
     @Override
     public void playerRemoved(Player player) {
-        
+        listModel.removeElement(player);
+        errorMessageLabel.setText(" ");
     }
 }
