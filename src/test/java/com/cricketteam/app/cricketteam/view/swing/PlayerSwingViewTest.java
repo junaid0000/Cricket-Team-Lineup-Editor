@@ -41,4 +41,38 @@ public class PlayerSwingViewTest {
         window.list("playerList");
         window.label("errorMessageLabel").requireText(" ");
     }
+
+    @Test
+    void testShowAllPlayersShouldAddPlayerDescriptionsToTheList() {
+        com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
+        com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
+        GuiActionRunner.execute(() -> playerSwingView.showAllPlayers(java.util.Arrays.asList(player1, player2)));
+        String[] listContents = window.list().contents();
+        org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player1.toString(), player2.toString());
+    }
+
+    @Test
+    void testPlayerAddedShouldAddThePlayerToTheListAndResetTheErrorLabel() {
+        com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(player1));
+        String[] listContents = window.list().contents();
+        org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player1.toString());
+        window.label("errorMessageLabel").requireText(" ");
+    }
+
+    @Test
+    void testPlayerRemovedShouldRemoveThePlayerFromTheListAndResetTheErrorLabel() {
+        com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
+        com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
+        GuiActionRunner.execute(() -> {
+            playerSwingView.playerAdded(player1);
+            playerSwingView.playerAdded(player2);
+        });
+        
+        GuiActionRunner.execute(() -> playerSwingView.playerRemoved(player1));
+        
+        String[] listContents = window.list().contents();
+        org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player2.toString());
+        window.label("errorMessageLabel").requireText(" ");
+    }
 }
