@@ -57,4 +57,9 @@ public class Player {
         Player other = (Player) obj;
         return Objects.equals(id, other.id) && Objects.equals(name, other.name) && Objects.equals(role, other.role);
     }
+
+    @Override
+    public String toString() {
+        return "Player [id=" + id + ", name=" + name + ", role=" + role + "]";
+    }
 }

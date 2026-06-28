@@ -37,4 +37,20 @@ class PlayerControllerTest {
 
         verify(playerView).showAllPlayers(players);
     }
+
+    @Test
+    void testNewPlayer() {
+        Player player = new Player("1", "Junaid Munir", "Batsman");
+        playerController.newPlayer(player);
+        verify(playerRepository).save(player);
+        verify(playerView).playerAdded(player);
+    }
+
+    @Test
+    void testDeletePlayer() {
+        Player player = new Player("1", "Junaid Munir", "Batsman");
+        playerController.deletePlayer(player);
+        verify(playerRepository).delete("1");
+        verify(playerView).playerRemoved(player);
+    }
 }
