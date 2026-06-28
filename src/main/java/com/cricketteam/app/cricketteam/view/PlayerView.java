@@ -1,0 +1,9 @@
+package com.cricketteam.app.cricketteam.view;
+
+import java.util.List;
+
+import com.cricketteam.app.cricketteam.model.Player;
+
+public interface PlayerView {
+    void showAllPlayers(List<Player> players);
+}
