@@ -1,5 +1,6 @@
 package com.cricketteam.app.cricketteam.controller;
 
+import com.cricketteam.app.cricketteam.model.Player;
 import com.cricketteam.app.cricketteam.repository.PlayerRepository;
 import com.cricketteam.app.cricketteam.view.PlayerView;
 
@@ -15,5 +16,15 @@ public class PlayerController {
 
     public void allPlayers() {
         playerView.showAllPlayers(playerRepository.findAll());
+    }
+
+    public void newPlayer(Player player) {
+        playerRepository.save(player);
+        playerView.playerAdded(player);
+    }
+
+    public void deletePlayer(Player player) {
+        playerRepository.delete(player.getId());
+        playerView.playerRemoved(player);
     }
 }
