@@ -27,18 +27,24 @@ public class PlayerMongoRepository implements PlayerRepository {
 
     @Override
     public Player findById(String id) {
-        // Will implement in next TDD phase
+        Document d = playerCollection.find(com.mongodb.client.model.Filters.eq("id", id)).first();
+        if (d != null) {
+            return fromDocument(d);
+        }
         return null;
     }
 
     @Override
     public void save(Player player) {
-        // Will implement in next TDD phase
+        playerCollection.insertOne(new Document()
+                .append("id", player.getId())
+                .append("name", player.getName())
+                .append("role", player.getRole()));
     }
 
     @Override
     public void delete(String id) {
-        // Will implement in next TDD phase
+        playerCollection.deleteOne(com.mongodb.client.model.Filters.eq("id", id));
     }
 
     private Player fromDocument(Document d) {
