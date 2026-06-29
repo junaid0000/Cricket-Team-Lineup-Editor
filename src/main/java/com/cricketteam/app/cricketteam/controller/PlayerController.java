@@ -29,6 +29,7 @@ public class PlayerController {
     }
 
     public void updatePlayer(Player player) {
-        
+        playerRepository.update(player);
+        playerView.playerUpdated(player);
     }
 }
