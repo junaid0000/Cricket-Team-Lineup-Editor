@@ -85,6 +85,11 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         listModel = new DefaultListModel<>();
         playerList = new JList<>(listModel);
         playerList.setName("playerList");
+        
+        playerList.addListSelectionListener(e -> {
+            deleteButton.setEnabled(playerList.getSelectedIndex() != -1);
+        });
+        
         JScrollPane scrollPane = new JScrollPane(playerList);
         panel.add(scrollPane);
 
@@ -93,6 +98,29 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         panel.add(errorMessageLabel);
 
         add(panel, BorderLayout.CENTER);
+
+        java.awt.event.KeyAdapter btnEnabler = new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                addButton.setEnabled(
+                    !idTextBox.getText().trim().isEmpty() &&
+                    !nameTextBox.getText().trim().isEmpty() &&
+                    !roleTextBox.getText().trim().isEmpty()
+                );
+            }
+        };
+
+        idTextBox.addKeyListener(btnEnabler);
+        nameTextBox.addKeyListener(btnEnabler);
+        roleTextBox.addKeyListener(btnEnabler);
+
+        addButton.addActionListener(e -> {
+            playerController.newPlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText()));
+        });
+
+        deleteButton.addActionListener(e -> {
+            playerController.deletePlayer(playerList.getSelectedValue());
+        });
     }
 
     @Override
