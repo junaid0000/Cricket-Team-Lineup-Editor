@@ -29,6 +29,12 @@ public class PlayerSwingView extends JFrame implements PlayerView {
     private JList<Player> playerList;
     private DefaultListModel<Player> listModel;
     private JLabel errorMessageLabel;
+    
+    private com.cricketteam.app.cricketteam.controller.PlayerController playerController;
+
+    public void setPlayerController(com.cricketteam.app.cricketteam.controller.PlayerController playerController) {
+        this.playerController = playerController;
+    }
 
     public PlayerSwingView() {
         setTitle("Cricket Team Lineup Editor");
