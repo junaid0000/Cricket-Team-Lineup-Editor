@@ -6,17 +6,29 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.verify;
+
+import com.cricketteam.app.cricketteam.controller.PlayerController;
+import com.cricketteam.app.cricketteam.model.Player;
 
 public class PlayerSwingViewTest {
 
     private FrameFixture window;
     private PlayerSwingView playerSwingView;
 
+    @Mock
+    private PlayerController playerController;
+    private AutoCloseable closeable;
+
     @BeforeEach
     public void onSetUp() {
+        closeable = MockitoAnnotations.openMocks(this);
         FailOnThreadViolationRepaintManager.install();
         GuiActionRunner.execute(() -> {
             playerSwingView = new PlayerSwingView();
+            playerSwingView.setPlayerController(playerController);
             return playerSwingView;
         });
         window = new FrameFixture(playerSwingView);
@@ -24,8 +36,9 @@ public class PlayerSwingViewTest {
     }
 
     @AfterEach
-    public void onTearDown() {
+    public void onTearDown() throws Exception {
         window.cleanUp();
+        closeable.close();
     }
 
     @Test
@@ -74,5 +87,101 @@ public class PlayerSwingViewTest {
         String[] listContents = window.list().contents();
         org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player2.toString());
         window.label("errorMessageLabel").requireText(" ");
+    }
+
+    @Test
+    void testWhenIdNameAndRoleAreNonEmptyThenAddButtonShouldBeEnabled() {
+        window.textBox("idTextBox").enterText("1");
+        window.textBox("nameTextBox").enterText("Junaid");
+        window.textBox("roleTextBox").enterText("Batsman");
+        window.button("addButton").requireEnabled();
+    }
+
+    @Test
+    void testWhenEitherIdOrNameOrRoleAreBlankThenAddButtonShouldBeDisabled() {
+        window.textBox("idTextBox").enterText("1");
+        window.textBox("nameTextBox").enterText("Junaid");
+        window.textBox("roleTextBox").enterText(" ");
+        window.button("addButton").requireDisabled();
+        
+        window.textBox("idTextBox").setText("");
+        window.textBox("nameTextBox").setText("");
+        window.textBox("roleTextBox").setText("");
+
+        window.textBox("idTextBox").enterText(" ");
+        window.textBox("nameTextBox").enterText("Junaid");
+        window.textBox("roleTextBox").enterText("Batsman");
+        window.button("addButton").requireDisabled();
+
+        window.textBox("idTextBox").setText("");
+        window.textBox("nameTextBox").setText("");
+        window.textBox("roleTextBox").setText("");
+
+        window.textBox("idTextBox").enterText("1");
+        window.textBox("nameTextBox").enterText(" ");
+        window.textBox("roleTextBox").enterText("Batsman");
+        window.button("addButton").requireDisabled();
+    }
+
+    @Test
+    void testAddButtonShouldDelegateToPlayerControllerNewPlayer() {
+        window.textBox("idTextBox").enterText("1");
+        window.textBox("nameTextBox").enterText("Junaid");
+        window.textBox("roleTextBox").enterText("Batsman");
+        window.button("addButton").click();
+        verify(playerController).newPlayer(new Player("1", "Junaid", "Batsman"));
+    }
+
+    @Test
+    void testDeleteButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
+        window.list("playerList").selectItem(0);
+        window.button("deleteButton").requireEnabled();
+        window.list("playerList").clearSelection();
+        window.button("deleteButton").requireDisabled();
+    }
+
+    @Test
+    void testDeleteButtonShouldDelegateToPlayerControllerDeletePlayer() {
+        Player player1 = new Player("1", "Junaid", "Batsman");
+        Player player2 = new Player("2", "Babar", "Batsman");
+        GuiActionRunner.execute(() -> {
+            playerSwingView.playerAdded(player1);
+            playerSwingView.playerAdded(player2);
+        });
+        window.list("playerList").selectItem(1);
+        window.button("deleteButton").click();
+        verify(playerController).deletePlayer(player2);
+    }
+
+    @Test
+    void testWhenPlayerIsSelectedThenTextboxesShouldBePopulatedAndIdShouldBeDisabled() {
+        Player player = new Player("1", "Junaid", "Batsman");
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
+        window.list("playerList").selectItem(0);
+        window.textBox("idTextBox").requireText("1");
+        window.textBox("idTextBox").requireDisabled();
+        window.textBox("nameTextBox").requireText("Junaid");
+        window.textBox("roleTextBox").requireText("Batsman");
+    }
+
+    @Test
+    void testUpdateButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
+        window.list("playerList").selectItem(0);
+        window.button("updateButton").requireEnabled();
+        window.list("playerList").clearSelection();
+        window.button("updateButton").requireDisabled();
+    }
+
+    @Test
+    void testUpdateButtonShouldDelegateToPlayerControllerUpdatePlayer() {
+        Player player = new Player("1", "Junaid", "Batsman");
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
+        window.list("playerList").selectItem(0);
+        window.textBox("nameTextBox").enterText(" Munir");
+        window.textBox("roleTextBox").deleteText().enterText("Captain");
+        window.button("updateButton").click();
+        verify(playerController).updatePlayer(new Player("1", "Junaid Munir", "Captain"));
     }
 }

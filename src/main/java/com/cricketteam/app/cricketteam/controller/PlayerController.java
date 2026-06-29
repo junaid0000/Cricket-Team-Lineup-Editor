@@ -27,4 +27,9 @@ public class PlayerController {
         playerRepository.delete(player.getId());
         playerView.playerRemoved(player);
     }
+
+    public void updatePlayer(Player player) {
+        playerRepository.update(player);
+        playerView.playerUpdated(player);
+    }
 }

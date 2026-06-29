@@ -53,4 +53,12 @@ class PlayerControllerTest {
         verify(playerRepository).delete("1");
         verify(playerView).playerRemoved(player);
     }
+
+    @Test
+    void testUpdatePlayerShouldDelegateToRepositoryAndNotifyView() {
+        Player player = new Player("1", "Junaid Munir", "Captain");
+        playerController.updatePlayer(player);
+        verify(playerRepository).update(player);
+        verify(playerView).playerUpdated(player);
+    }
 }

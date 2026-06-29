@@ -12,15 +12,16 @@ public class App {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-                PlayerMongoRepository playerRepository = new PlayerMongoRepository(mongoClient, "cricket", "player");
-
                 PlayerSwingView playerSwingView = new PlayerSwingView();
                 playerSwingView.setVisible(true);
 
-                PlayerController playerController = new PlayerController(playerSwingView, playerRepository);  
                 new Thread(() -> {
                     try {
+                        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+                        PlayerMongoRepository playerRepository = new PlayerMongoRepository(mongoClient, "cricket", "player");
+                        PlayerController playerController = new PlayerController(playerSwingView, playerRepository);  
+                        playerSwingView.setPlayerController(playerController);
+                        
                         playerController.allPlayers();
                     } catch (Exception e) {
                         System.err.println("Could not connect to MongoDB. You can still view the UI!");

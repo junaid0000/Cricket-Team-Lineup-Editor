@@ -43,6 +43,15 @@ public class PlayerMongoRepository implements PlayerRepository {
     }
 
     @Override
+    public void update(Player player) {
+        playerCollection.replaceOne(com.mongodb.client.model.Filters.eq("id", player.getId()),
+                new Document()
+                        .append("id", player.getId())
+                        .append("name", player.getName())
+                        .append("role", player.getRole()));
+    }
+
+    @Override
     public void delete(String id) {
         playerCollection.deleteOne(com.mongodb.client.model.Filters.eq("id", id));
     }
