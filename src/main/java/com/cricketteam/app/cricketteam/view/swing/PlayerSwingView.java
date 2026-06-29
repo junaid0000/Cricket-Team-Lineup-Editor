@@ -93,8 +93,6 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         
         playerList.addListSelectionListener(e -> {
             boolean isSelected = playerList.getSelectedIndex() != -1;
-            deleteButton.setEnabled(isSelected);
-            updateButton.setEnabled(isSelected);
             if (isSelected) {
                 Player selectedPlayer = playerList.getSelectedValue();
                 idTextBox.setText(selectedPlayer.getId());
@@ -104,6 +102,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
             } else {
                 idTextBox.setEnabled(true);
             }
+            updateButtonStates();
         });
         
         JScrollPane scrollPane = new JScrollPane(playerList);
@@ -118,11 +117,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         java.awt.event.KeyAdapter btnEnabler = new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(java.awt.event.KeyEvent e) {
-                addButton.setEnabled(
-                    !idTextBox.getText().trim().isEmpty() &&
-                    !nameTextBox.getText().trim().isEmpty() &&
-                    !roleTextBox.getText().trim().isEmpty()
-                );
+                updateButtonStates();
             }
         };
 
@@ -145,29 +140,48 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
     @Override
     public void showAllPlayers(List<Player> players) {
-        players.forEach(listModel::addElement);
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            players.forEach(listModel::addElement);
+        });
     }
 
     @Override
     public void playerAdded(Player player) {
-        listModel.addElement(player);
-        errorMessageLabel.setText(" ");
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            listModel.addElement(player);
+            errorMessageLabel.setText(" ");
+        });
     }
 
     @Override
     public void playerRemoved(Player player) {
-        listModel.removeElement(player);
-        errorMessageLabel.setText(" ");
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            listModel.removeElement(player);
+            errorMessageLabel.setText(" ");
+        });
     }
 
     @Override
     public void playerUpdated(Player player) {
-        for (int i = 0; i < listModel.size(); i++) {
-            if (listModel.getElementAt(i).getId().equals(player.getId())) {
-                listModel.setElementAt(player, i);
-                break;
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            for (int i = 0; i < listModel.size(); i++) {
+                if (listModel.getElementAt(i).getId().equals(player.getId())) {
+                    listModel.setElementAt(player, i);
+                    break;
+                }
             }
-        }
-        errorMessageLabel.setText(" ");
+            errorMessageLabel.setText(" ");
+        });
+    }
+
+    private void updateButtonStates() {
+        boolean isSelected = playerList.getSelectedIndex() != -1;
+        boolean hasText = !idTextBox.getText().trim().isEmpty() &&
+                          !nameTextBox.getText().trim().isEmpty() &&
+                          !roleTextBox.getText().trim().isEmpty();
+
+        addButton.setEnabled(!isSelected && hasText);
+        updateButton.setEnabled(isSelected && hasText);
+        deleteButton.setEnabled(isSelected);
     }
 }
