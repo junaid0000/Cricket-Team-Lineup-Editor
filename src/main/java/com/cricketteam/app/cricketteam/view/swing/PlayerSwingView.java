@@ -139,4 +139,9 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         listModel.removeElement(player);
         errorMessageLabel.setText(" ");
     }
+
+    @Override
+    public void playerUpdated(Player player) {
+        
+    }
 }

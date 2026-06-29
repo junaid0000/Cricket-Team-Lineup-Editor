@@ -8,4 +8,5 @@ public interface PlayerView {
     void showAllPlayers(List<Player> players);
     void playerAdded(Player player);
     void playerRemoved(Player player);
+    void playerUpdated(Player player);
 }
