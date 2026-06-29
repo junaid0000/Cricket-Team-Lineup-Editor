@@ -153,4 +153,35 @@ public class PlayerSwingViewTest {
         window.button("deleteButton").click();
         verify(playerController).deletePlayer(player2);
     }
+
+    @Test
+    void testWhenPlayerIsSelectedThenTextboxesShouldBePopulatedAndIdShouldBeDisabled() {
+        Player player = new Player("1", "Junaid", "Batsman");
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
+        window.list("playerList").selectItem(0);
+        window.textBox("idTextBox").requireText("1");
+        window.textBox("idTextBox").requireDisabled();
+        window.textBox("nameTextBox").requireText("Junaid");
+        window.textBox("roleTextBox").requireText("Batsman");
+    }
+
+    @Test
+    void testUpdateButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
+        window.list("playerList").selectItem(0);
+        window.button("updateButton").requireEnabled();
+        window.list("playerList").clearSelection();
+        window.button("updateButton").requireDisabled();
+    }
+
+    @Test
+    void testUpdateButtonShouldDelegateToPlayerControllerUpdatePlayer() {
+        Player player = new Player("1", "Junaid", "Batsman");
+        GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
+        window.list("playerList").selectItem(0);
+        window.textBox("nameTextBox").enterText(" Munir");
+        window.textBox("roleTextBox").deleteText().enterText("Captain");
+        window.button("updateButton").click();
+        verify(playerController).updatePlayer(new Player("1", "Junaid Munir", "Captain"));
+    }
 }
