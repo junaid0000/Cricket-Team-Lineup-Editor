@@ -92,17 +92,19 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         playerList.setName("playerList");
         
         playerList.addListSelectionListener(e -> {
-            boolean isSelected = playerList.getSelectedIndex() != -1;
-            if (isSelected) {
-                Player selectedPlayer = playerList.getSelectedValue();
-                idTextBox.setText(selectedPlayer.getId());
-                idTextBox.setEnabled(false);
-                nameTextBox.setText(selectedPlayer.getName());
-                roleTextBox.setText(selectedPlayer.getRole());
-            } else {
-                idTextBox.setEnabled(true);
+            if (!e.getValueIsAdjusting()) {
+                boolean isSelected = playerList.getSelectedIndex() != -1;
+                if (isSelected) {
+                    Player selectedPlayer = playerList.getSelectedValue();
+                    idTextBox.setText(selectedPlayer.getId());
+                    idTextBox.setEnabled(false);
+                    nameTextBox.setText(selectedPlayer.getName());
+                    roleTextBox.setText(selectedPlayer.getRole());
+                } else {
+                    idTextBox.setEnabled(true);
+                }
+                updateButtonStates();
             }
-            updateButtonStates();
         });
         
         JScrollPane scrollPane = new JScrollPane(playerList);
@@ -140,38 +142,30 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
     @Override
     public void showAllPlayers(List<Player> players) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            players.forEach(listModel::addElement);
-        });
+        players.forEach(listModel::addElement);
     }
 
     @Override
     public void playerAdded(Player player) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            listModel.addElement(player);
-            errorMessageLabel.setText(" ");
-        });
+        listModel.addElement(player);
+        errorMessageLabel.setText(" ");
     }
 
     @Override
     public void playerRemoved(Player player) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            listModel.removeElement(player);
-            errorMessageLabel.setText(" ");
-        });
+        listModel.removeElement(player);
+        errorMessageLabel.setText(" ");
     }
 
     @Override
     public void playerUpdated(Player player) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            for (int i = 0; i < listModel.size(); i++) {
-                if (listModel.getElementAt(i).getId().equals(player.getId())) {
-                    listModel.setElementAt(player, i);
-                    break;
-                }
+        for (int i = 0; i < listModel.size(); i++) {
+            if (listModel.getElementAt(i).getId().equals(player.getId())) {
+                listModel.setElementAt(player, i);
+                break;
             }
-            errorMessageLabel.setText(" ");
-        });
+        }
+        errorMessageLabel.setText(" ");
     }
 
     private void updateButtonStates() {
