@@ -16,13 +16,14 @@
     <maven.compiler.target>17</maven.compiler.target>
     <picocli.version>4.7.5</picocli.version>
     <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
+    <pitest.maven.plugin.version>1.17.2</pitest.maven.plugin.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>5.10.0</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -40,12 +41,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>5.5.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
       <version>5.5.0</version>
       <scope>test</scope>
     </dependency>
@@ -88,6 +83,41 @@
                               <goals>
                                   <goal>prepare-agent</goal>
                                   <goal>report</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+      <profile>
+          <id>pit</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.pitest</groupId>
+                      <artifactId>pitest-maven</artifactId>
+                      <version>${pitest.maven.plugin.version}</version>
+                      <configuration>
+                          <targetClasses>
+                              <param>com.cricketteam.app.cricketteam.controller.*</param>
+                              <param>com.cricketteam.app.cricketteam.repository.*</param>
+                          </targetClasses>
+                          <targetTests>
+                              <param>com.cricketteam.app.cricketteam.controller.*Test</param>
+                              <param>com.cricketteam.app.cricketteam.repository.*Test</param>
+                          </targetTests>
+                          <parseSurefireConfig>false</parseSurefireConfig>
+                          <excludedClasses>
+                              <param>com.cricketteam.app.cricketteam.model.*</param>
+                              <param>com.cricketteam.app.cricketteam.app.swing.CricketTeamSwingApp</param>
+                          </excludedClasses>
+                          <timestampedReports>false</timestampedReports>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>mutationCoverage</goal>
                               </goals>
                           </execution>
                       </executions>

@@ -6,18 +6,18 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.cricketteam.app.cricketteam.model.Player;
 import com.cricketteam.app.cricketteam.repository.PlayerRepository;
 import com.cricketteam.app.cricketteam.view.PlayerView;
 
-@ExtendWith(MockitoExtension.class)
-class PlayerControllerTest {
+@RunWith(MockitoJUnitRunner.class)
+public class PlayerControllerTest {
 
     @Mock
     private PlayerRepository playerRepository;
@@ -29,7 +29,7 @@ class PlayerControllerTest {
     private PlayerController playerController;
 
     @Test
-    void testAllPlayers() {
+    public void testAllPlayers() {
         List<Player> players = Arrays.asList(new Player("1", "Junaid Munir", "Batsman"));
         when(playerRepository.findAll()).thenReturn(players);
 
@@ -39,7 +39,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    void testNewPlayer() {
+    public void testNewPlayer() {
         Player player = new Player("1", "Junaid Munir", "Batsman");
         playerController.newPlayer(player);
         verify(playerRepository).save(player);
@@ -47,7 +47,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    void testDeletePlayer() {
+    public void testDeletePlayer() {
         Player player = new Player("1", "Junaid Munir", "Batsman");
         playerController.deletePlayer(player);
         verify(playerRepository).delete("1");
@@ -55,7 +55,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    void testUpdatePlayerShouldDelegateToRepositoryAndNotifyView() {
+    public void testUpdatePlayerShouldDelegateToRepositoryAndNotifyView() {
         Player player = new Player("1", "Junaid Munir", "Captain");
         playerController.updatePlayer(player);
         verify(playerRepository).update(player);

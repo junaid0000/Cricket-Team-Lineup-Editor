@@ -3,9 +3,9 @@ package com.cricketteam.app.cricketteam.view.swing;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.verify;
@@ -22,7 +22,7 @@ public class PlayerSwingViewTest {
     private PlayerController playerController;
     private AutoCloseable closeable;
 
-    @BeforeEach
+    @Before
     public void onSetUp() {
         closeable = MockitoAnnotations.openMocks(this);
         FailOnThreadViolationRepaintManager.install();
@@ -35,14 +35,14 @@ public class PlayerSwingViewTest {
         window.show(); 
     }
 
-    @AfterEach
+    @After
     public void onTearDown() throws Exception {
         window.cleanUp();
         closeable.close();
     }
 
     @Test
-    void testControlsInitialStates() {
+    public void testControlsInitialStates() {
         window.label("idLabel").requireText("id");
         window.textBox("idTextBox").requireEnabled();
         window.label("nameLabel").requireText("name");
@@ -56,7 +56,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testShowAllPlayersShouldAddPlayerDescriptionsToTheList() {
+    public void testShowAllPlayersShouldAddPlayerDescriptionsToTheList() {
         com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
         com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
         GuiActionRunner.execute(() -> playerSwingView.showAllPlayers(java.util.Arrays.asList(player1, player2)));
@@ -65,7 +65,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testPlayerAddedShouldAddThePlayerToTheListAndResetTheErrorLabel() {
+    public void testPlayerAddedShouldAddThePlayerToTheListAndResetTheErrorLabel() {
         com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
         GuiActionRunner.execute(() -> playerSwingView.playerAdded(player1));
         String[] listContents = window.list().contents();
@@ -74,7 +74,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testPlayerRemovedShouldRemoveThePlayerFromTheListAndResetTheErrorLabel() {
+    public void testPlayerRemovedShouldRemoveThePlayerFromTheListAndResetTheErrorLabel() {
         com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
         com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
         GuiActionRunner.execute(() -> {
@@ -90,7 +90,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testWhenIdNameAndRoleAreNonEmptyThenAddButtonShouldBeEnabled() {
+    public void testWhenIdNameAndRoleAreNonEmptyThenAddButtonShouldBeEnabled() {
         window.textBox("idTextBox").enterText("1");
         window.textBox("nameTextBox").enterText("Junaid");
         window.textBox("roleTextBox").enterText("Batsman");
@@ -98,7 +98,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testWhenEitherIdOrNameOrRoleAreBlankThenAddButtonShouldBeDisabled() {
+    public void testWhenEitherIdOrNameOrRoleAreBlankThenAddButtonShouldBeDisabled() {
         window.textBox("idTextBox").enterText("1");
         window.textBox("nameTextBox").enterText("Junaid");
         window.textBox("roleTextBox").enterText(" ");
@@ -124,7 +124,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testAddButtonShouldDelegateToPlayerControllerNewPlayer() {
+    public void testAddButtonShouldDelegateToPlayerControllerNewPlayer() {
         window.textBox("idTextBox").enterText("1");
         window.textBox("nameTextBox").enterText("Junaid");
         window.textBox("roleTextBox").enterText("Batsman");
@@ -133,7 +133,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testDeleteButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
+    public void testDeleteButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
         GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
         window.list("playerList").selectItem(0);
         window.button("deleteButton").requireEnabled();
@@ -142,7 +142,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testDeleteButtonShouldDelegateToPlayerControllerDeletePlayer() {
+    public void testDeleteButtonShouldDelegateToPlayerControllerDeletePlayer() {
         Player player1 = new Player("1", "Junaid", "Batsman");
         Player player2 = new Player("2", "Babar", "Batsman");
         GuiActionRunner.execute(() -> {
@@ -155,7 +155,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testWhenPlayerIsSelectedThenTextboxesShouldBePopulatedAndIdShouldBeDisabled() {
+    public void testWhenPlayerIsSelectedThenTextboxesShouldBePopulatedAndIdShouldBeDisabled() {
         Player player = new Player("1", "Junaid", "Batsman");
         GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
         window.list("playerList").selectItem(0);
@@ -166,7 +166,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testUpdateButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
+    public void testUpdateButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
         GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
         window.list("playerList").selectItem(0);
         window.button("updateButton").requireEnabled();
@@ -175,7 +175,7 @@ public class PlayerSwingViewTest {
     }
 
     @Test
-    void testUpdateButtonShouldDelegateToPlayerControllerUpdatePlayer() {
+    public void testUpdateButtonShouldDelegateToPlayerControllerUpdatePlayer() {
         Player player = new Player("1", "Junaid", "Batsman");
         GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
         window.list("playerList").selectItem(0);
