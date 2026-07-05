@@ -15,6 +15,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <picocli.version>4.7.5</picocli.version>
+    <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
   </properties>
 
   <dependencies>
@@ -55,7 +56,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Application Dependencies -->
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
@@ -67,4 +67,33 @@
       <version>${picocli.version}</version>
     </dependency>
   </dependencies>
+
+  <profiles>
+      <profile>
+          <id>jacoco</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.jacoco</groupId>
+                      <artifactId>jacoco-maven-plugin</artifactId>
+                      <version>${jacoco.maven.plugin.version}</version>
+                      <configuration>
+                          <excludes>
+                              <exclude>**/model/*.*</exclude>
+                              <exclude>**/CricketTeamSwingApp.*</exclude>
+                          </excludes>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>prepare-agent</goal>
+                                  <goal>report</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+  </profiles>
 </project>
