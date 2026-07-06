@@ -14,13 +14,19 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <picocli.version>4.7.5</picocli.version>
+    <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
+    <pitest.maven.plugin.version>1.17.2</pitest.maven.plugin.version>
+    <testcontainers.version>1.21.4</testcontainers.version>
+    <build.helper.maven.plugin.version>3.6.1</build.helper.maven.plugin.version>
+    <maven.failsafe.plugin.version>3.5.5</maven.failsafe.plugin.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>5.10.0</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -42,23 +48,134 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>5.5.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-swing-junit</artifactId>
       <version>3.17.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mongodb</artifactId>
+      <version>${testcontainers.version}</version>
+      <scope>test</scope>
+    </dependency>
 
-    <!-- Application Dependencies -->
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
       <version>4.11.1</version>
     </dependency>
+    <dependency>
+      <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
+      <version>${picocli.version}</version>
+    </dependency>
   </dependencies>
+
+  <build>
+      <plugins>
+          <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>build-helper-maven-plugin</artifactId>
+              <version>${build.helper.maven.plugin.version}</version>
+              <executions>
+                  <execution>
+                      <id>add-test-sources</id>
+                      <phase>generate-test-sources</phase>
+                      <goals>
+                          <goal>add-test-source</goal>
+                      </goals>
+                      <configuration>
+                          <sources>
+                              <source>src/it/java</source>
+                          </sources>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-failsafe-plugin</artifactId>
+              <version>${maven.failsafe.plugin.version}</version>
+              <executions>
+                  <execution>
+                      <id>default-it</id>
+                      <goals>
+                          <goal>integration-test</goal>
+                          <goal>verify</goal>
+                      </goals>
+                      <configuration>
+                          <includes>
+                              <include>**/*IT.java</include>
+                          </includes>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
+  </build>
+
+  <profiles>
+      <profile>
+          <id>jacoco</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.jacoco</groupId>
+                      <artifactId>jacoco-maven-plugin</artifactId>
+                      <version>${jacoco.maven.plugin.version}</version>
+                      <configuration>
+                          <excludes>
+                              <exclude>**/model/*.*</exclude>
+                              <exclude>**/CricketTeamSwingApp.*</exclude>
+                          </excludes>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>prepare-agent</goal>
+                                  <goal>report</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+      <profile>
+          <id>pit</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.pitest</groupId>
+                      <artifactId>pitest-maven</artifactId>
+                      <version>${pitest.maven.plugin.version}</version>
+                      <configuration>
+                          <targetClasses>
+                              <param>com.cricketteam.app.cricketteam.controller.*</param>
+                              <param>com.cricketteam.app.cricketteam.repository.*</param>
+                          </targetClasses>
+                          <targetTests>
+                              <param>com.cricketteam.app.cricketteam.controller.*Test</param>
+                              <param>com.cricketteam.app.cricketteam.repository.*Test</param>
+                          </targetTests>
+                          <parseSurefireConfig>false</parseSurefireConfig>
+                          <excludedClasses>
+                              <param>com.cricketteam.app.cricketteam.model.*</param>
+                              <param>com.cricketteam.app.cricketteam.app.swing.CricketTeamSwingApp</param>
+                          </excludedClasses>
+                          <timestampedReports>false</timestampedReports>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>mutationCoverage</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+  </profiles>
 </project>

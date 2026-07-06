@@ -1,13 +1,13 @@
 package com.cricketteam.app.cricketteam.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class PlayerTest {
+public class PlayerTest {
 
     @Test
-    void testPlayerInitialization() {
+    public void testPlayerInitialization() {
         Player player = new Player("1", "Junaid Munir", "Batsman");
         assertEquals("1", player.getId());
         assertEquals("Junaid Munir", player.getName());
