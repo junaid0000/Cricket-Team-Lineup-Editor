@@ -92,19 +92,17 @@ public class PlayerSwingView extends JFrame implements PlayerView {
         playerList.setName("playerList");
         
         playerList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                boolean isSelected = playerList.getSelectedIndex() != -1;
-                if (isSelected) {
-                    Player selectedPlayer = playerList.getSelectedValue();
-                    idTextBox.setText(selectedPlayer.getId());
-                    idTextBox.setEnabled(false);
-                    nameTextBox.setText(selectedPlayer.getName());
-                    roleTextBox.setText(selectedPlayer.getRole());
-                } else {
-                    idTextBox.setEnabled(true);
-                }
-                updateButtonStates();
+            boolean isSelected = playerList.getSelectedIndex() != -1;
+            if (isSelected) {
+                Player selectedPlayer = playerList.getSelectedValue();
+                idTextBox.setText(selectedPlayer.getId());
+                idTextBox.setEnabled(false);
+                nameTextBox.setText(selectedPlayer.getName());
+                roleTextBox.setText(selectedPlayer.getRole());
+            } else {
+                idTextBox.setEnabled(true);
             }
+            updateButtonStates();
         });
         
         JScrollPane scrollPane = new JScrollPane(playerList);

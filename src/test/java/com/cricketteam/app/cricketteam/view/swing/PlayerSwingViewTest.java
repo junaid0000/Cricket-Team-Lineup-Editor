@@ -159,6 +159,7 @@ public class PlayerSwingViewTest {
         Player player = new Player("1", "Junaid", "Batsman");
         GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
         window.list("playerList").selectItem(0);
+        window.robot().waitForIdle();
         window.textBox("idTextBox").requireText("1");
         window.textBox("idTextBox").requireDisabled();
         window.textBox("nameTextBox").requireText("Junaid");

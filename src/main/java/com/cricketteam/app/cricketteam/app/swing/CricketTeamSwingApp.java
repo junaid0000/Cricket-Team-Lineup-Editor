@@ -47,7 +47,6 @@ public class CricketTeamSwingApp implements Callable<Void> {
 				playerSwingView.setPlayerController(playerController);
 				playerSwingView.setVisible(true);
 				
-				// Run MongoDB operations in a separate thread so UI doesn't hang!
 				new Thread(() -> {
 					try {
 						playerController.allPlayers();
