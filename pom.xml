@@ -216,16 +216,20 @@
                               <param>com.cricketteam.app.cricketteam.controller.*</param>
                               <param>com.cricketteam.app.cricketteam.repository.*</param>
                           </targetClasses>
-                          <targetTests>
-                              <param>com.cricketteam.app.cricketteam.controller.*Test</param>
-                              <param>com.cricketteam.app.cricketteam.repository.*Test</param>
-                          </targetTests>
+                           <targetTests>
+                               <param>com.cricketteam.app.cricketteam.controller.*Test</param>
+                               <param>com.cricketteam.app.cricketteam.controller.*IT</param>
+                               <param>com.cricketteam.app.cricketteam.repository.*Test</param>
+                               <param>com.cricketteam.app.cricketteam.repository.*IT</param>
+                           </targetTests>
                           <parseSurefireConfig>false</parseSurefireConfig>
                           <excludedClasses>
                               <param>com.cricketteam.app.cricketteam.model.*</param>
                               <param>com.cricketteam.app.cricketteam.app.swing.CricketTeamSwingApp</param>
                           </excludedClasses>
                           <timestampedReports>false</timestampedReports>
+                          <timeoutConstant>20000</timeoutConstant>
+                          <timeoutFactor>3.0</timeoutFactor>
                       </configuration>
                       <executions>
                           <execution>

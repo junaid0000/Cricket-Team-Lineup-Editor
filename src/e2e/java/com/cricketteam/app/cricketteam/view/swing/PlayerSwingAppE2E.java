@@ -24,8 +24,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import org.assertj.swing.timing.Pause;
-import org.assertj.swing.timing.Condition;
 
 @RunWith(GUITestRunner.class)
 public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
@@ -126,12 +124,6 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
     }
 
     private void assertListContainsExactly(String[] expectedContents) {
-        Pause.pause(new Condition("Wait for list to update") {
-            @Override
-            public boolean test() {
-                return window.list("playerList").contents().length == expectedContents.length;
-            }
-        });
         assertThat(window.list("playerList").contents())
             .containsExactly(expectedContents);
     }
