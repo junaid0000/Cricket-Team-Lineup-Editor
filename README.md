@@ -1,4 +1,4 @@
-# Cricket Team LineUp
+# Cricket-Team-Lineup-Editor
 
 [![Java CI with Maven](https://github.com/junaid0000/Cricket-Team-Lineup-Editor/actions/workflows/maven.yml/badge.svg)](https://github.com/junaid0000/Cricket-Team-Lineup-Editor/actions/workflows/maven.yml)
 [![Coverage Status](https://coveralls.io/repos/github/junaid0000/Cricket-Team-Lineup-Editor/badge.svg?branch=master)](https://coveralls.io/github/junaid0000/Cricket-Team-Lineup-Editor?branch=master)
@@ -10,19 +10,30 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=junaid0000_Cricket-Team-Lineup-Editor&metric=duplicated_lines_density)](https://sonarcloud.io/component_measures?metric=duplicated_lines_density&id=junaid0000_Cricket-Team-Lineup-Editor)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=junaid0000_Cricket-Team-Lineup-Editor&metric=sqale_index)](https://sonarcloud.io/component_measures?metric=sqale_index&id=junaid0000_Cricket-Team-Lineup-Editor)
 
-A simple Java Swing Cricket Team Management application built with Maven.
+Project Overview: The application will be a simple  Cricket Team Lineup 
+Editor  . It will manage a single main entity:
+**Player**: playerId, name, jerseyNumber, role
 
-The project follows a TDD workflow with unit tests, MongoDB integration tests, Swing UI tests, end-to-end tests, JaCoCo coverage, PIT mutation testing, GitHub Actions, and SonarCloud analysis.
+**Main Features:**
+Add a new player
+Edit an existing player's details or role
+Update an existing player's details or role 
+Delete a player
+ 
+**Tools & Technologies:**
+Java (version 17 ]).
+MongoDB (managed via Docker/Testcontainers).
+Maven for build automation.
+JUnit 4 for unit testing.
+Mockito for mocking (used appropriately without mocking 3rd party types).
+PIT for mutation testing.
+JaCoCo and Coveralls for 100% code coverage.
+SonarCloud for code quality (no technical debt).
+GitHub Actions for continuous integration.
+Swing-based user interface.
 
 SonarCloud project: [junaid0000_Cricket-Team-Lineup-Editor](https://sonarcloud.io/project/overview?id=junaid0000_Cricket-Team-Lineup-Editor)
 
-## Requirements
-
-- Java 17
-- Docker running
-- Maven installed locally
-
-Docker is used by Testcontainers during integration and end-to-end tests. No manual MongoDB setup or Docker Compose file is required for the tests.
 
 ## Build And Test
 
