@@ -18,101 +18,107 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+/**
+ * To run this test from Eclipse, a Docker daemon/Docker Desktop must be running on the host machine.
+ * Testcontainers will automatically spin up the required MongoDB container.
+ */
 public class PlayerMongoRepositoryTestcontainersIT {
 
-    @ClassRule
-    public static final MongoDBContainer mongo = new MongoDBContainer("mongo:5");
+	@ClassRule
+	public static final MongoDBContainer mongo = new MongoDBContainer("mongo:5");
 
-    private MongoClient client;
-    private PlayerMongoRepository playerRepository;
-    private MongoCollection<Document> playerCollection;
+	private MongoClient client;
+	private PlayerMongoRepository playerRepository;
+	private MongoCollection<Document> playerCollection;
 
-    private static final String CRICKET_DB_NAME = "cricket";
-    private static final String PLAYER_COLLECTION_NAME = "player";
+	private static final String CRICKET_DB_NAME = "cricket";
+	private static final String PLAYER_COLLECTION_NAME = "player";
 
-    @Before
-    public void setup() {
-        client = MongoClients.create(mongo.getReplicaSetUrl());
-        playerRepository = new PlayerMongoRepository(client, CRICKET_DB_NAME, PLAYER_COLLECTION_NAME);
-        MongoDatabase database = client.getDatabase(CRICKET_DB_NAME);
-        database.drop();
-        playerCollection = database.getCollection(PLAYER_COLLECTION_NAME);
-    }
+	@Before
+	public void setup() {
+		client = MongoClients.create(mongo.getReplicaSetUrl());
+		playerRepository = new PlayerMongoRepository(client, CRICKET_DB_NAME, PLAYER_COLLECTION_NAME);
+		MongoDatabase database = client.getDatabase(CRICKET_DB_NAME);
+		database.drop();
+		playerCollection = database.getCollection(PLAYER_COLLECTION_NAME);
+	}
 
-    @After
-    public void tearDown() {
-        client.close();
-    }
+	@After
+	public void tearDown() {
+		client.close();
+	}
 
-    @Test
-    public void testSave() {
-        Player player = new Player("1", "Junaid Munir", "Batsman");
-        playerRepository.save(player);
-        assertThat(readAllPlayersFromDatabase())
-            .usingRecursiveFieldByFieldElementComparator()
-            .containsExactly(player);
-    }
+	@Test
+	public void testSave() {
+		Player player = new Player("1", "Junaid Munir", "Batsman");
+		playerRepository.save(player);
+		assertThat(readAllPlayersFromDatabase())
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactly(player);
+	}
 
-    @Test
-    public void testFindAll() {
-        addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        addTestPlayerToDatabase("2", "Babar Azam", "Captain");
-        assertThat(playerRepository.findAll())
-            .usingRecursiveFieldByFieldElementComparator()
-            .containsExactly(
-                new Player("1", "Junaid Munir", "Batsman"),
-                new Player("2", "Babar Azam", "Captain"));
-    }
+	@Test
+	public void testFindAll() {
+		addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+		addTestPlayerToDatabase("2", "Babar Azam", "Captain");
+		assertThat(playerRepository.findAll())
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactly(
+				new Player("1", "Junaid Munir", "Batsman"),
+				new Player("2", "Babar Azam", "Captain"));
+	}
 
-    @Test
-    public void testFindByIdWhenPlayerExists() {
-        addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        addTestPlayerToDatabase("2", "Babar Azam", "Captain");
-        assertThat(playerRepository.findById("2"))
-            .usingRecursiveComparison()
-            .isEqualTo(new Player("2", "Babar Azam", "Captain"));
-    }
+	@Test
+	public void testFindByIdWhenPlayerExists() {
+		addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+		addTestPlayerToDatabase("2", "Babar Azam", "Captain");
+		assertThat(playerRepository.findById("2"))
+			.usingRecursiveComparison()
+			.isEqualTo(new Player("2", "Babar Azam", "Captain"));
+	}
 
-    @Test
-    public void testFindByIdWhenPlayerDoesNotExist() {
-        addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        assertThat(playerRepository.findById("2")).isNull();
-    }
+	@Test
+	public void testFindByIdWhenPlayerDoesNotExist() {
+		addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+		assertThat(playerRepository.findById("2")).isNull();
+	}
 
-    @Test
-    public void testUpdate() {
-        addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        Player editedPlayer = new Player("1", "Junaid Munir Updated", "All-Rounder");
-        playerRepository.update(editedPlayer);
-        assertThat(readAllPlayersFromDatabase())
-            .usingRecursiveFieldByFieldElementComparator()
-            .containsExactly(editedPlayer);
-    }
+	@Test
+	public void testUpdate() {
+		addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+		Player editedPlayer = new Player("1", "Junaid Munir Updated", "All-Rounder");
+		playerRepository.update(editedPlayer);
+		assertThat(readAllPlayersFromDatabase())
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactly(editedPlayer);
+	}
 
-    @Test
-    public void testDelete() {
-        addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        addTestPlayerToDatabase("2", "Babar Azam", "Captain");
-        playerRepository.delete("1");
-        assertThat(readAllPlayersFromDatabase())
-            .usingRecursiveFieldByFieldElementComparator()
-            .containsExactly(new Player("2", "Babar Azam", "Captain"));
-    }
+	@Test
+	public void testDelete() {
+		addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+		addTestPlayerToDatabase("2", "Babar Azam", "Captain");
+		playerRepository.delete("1");
+		assertThat(readAllPlayersFromDatabase())
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactly(new Player("2", "Babar Azam", "Captain"));
+	}
 
-    private void addTestPlayerToDatabase(String id, String name, String role) {
-        playerCollection.insertOne(
-            new Document()
-                .append("id", id)
-                .append("name", name)
-                .append("role", role));
-    }
+	private void addTestPlayerToDatabase(String id, String name, String role) {
+		playerCollection.insertOne(
+			new Document()
+				.append("id", id)
+				.append("name", name)
+				.append("role", role));
+	}
 
-    private List<Player> readAllPlayersFromDatabase() {
-        return StreamSupport.stream(playerCollection.find().spliterator(), false)
-            .map(d -> new Player(
-                "" + d.get("id"),
-                "" + d.get("name"),
-                "" + d.get("role")))
-            .toList();
-    }
+	private List<Player> readAllPlayersFromDatabase() {
+		return StreamSupport.stream(playerCollection.find().spliterator(), false)
+			.map(d -> new Player(
+				"" + d.get("id"),
+				"" + d.get("name"),
+				"" + d.get("role")))
+			.toList();
+	}
 }
+
+

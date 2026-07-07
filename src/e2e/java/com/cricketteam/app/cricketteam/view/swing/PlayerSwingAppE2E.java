@@ -25,125 +25,131 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 
+/**
+ * To run this test from Eclipse, a Docker daemon/Docker Desktop must be running on the host machine.
+ * Testcontainers will automatically spin up the required MongoDB container.
+ */
 @RunWith(GUITestRunner.class)
 public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
 
-    @ClassRule
-    public static final MongoDBContainer mongo = new MongoDBContainer("mongo:5");
+	@ClassRule
+	public static final MongoDBContainer mongo = new MongoDBContainer("mongo:5");
 
-    private static final String CRICKET_DB_NAME = "cricket";
-    private static final String PLAYER_COLLECTION_NAME = "player";
+	private static final String CRICKET_DB_NAME = "cricket";
+	private static final String PLAYER_COLLECTION_NAME = "player";
 
-    private FrameFixture window;
-    private MongoClient client;
-    private MongoCollection<Document> playerCollection;
+	private FrameFixture window;
+	private MongoClient client;
+	private MongoCollection<Document> playerCollection;
 
-    @Override
-    protected void onSetUp() {
-        client = MongoClients.create(mongo.getReplicaSetUrl());
-        client.getDatabase(CRICKET_DB_NAME).drop();
-        playerCollection = client
-            .getDatabase(CRICKET_DB_NAME)
-            .getCollection(PLAYER_COLLECTION_NAME);
-    }
+	@Override
+	protected void onSetUp() {
+		client = MongoClients.create(mongo.getReplicaSetUrl());
+		client.getDatabase(CRICKET_DB_NAME).drop();
+		playerCollection = client
+			.getDatabase(CRICKET_DB_NAME)
+			.getCollection(PLAYER_COLLECTION_NAME);
+	}
 
-    private void startApp() {
-        application("com.cricketteam.app.cricketteam.app.swing.CricketTeamSwingApp")
-            .withArgs(
-                "--mongo-host=" + mongo.getHost(),
-                "--mongo-port=" + mongo.getFirstMappedPort(),
-                "--db-name=" + CRICKET_DB_NAME,
-                "--db-collection=" + PLAYER_COLLECTION_NAME)
-            .start();
+	private void startApp() {
+		application("com.cricketteam.app.cricketteam.app.swing.CricketTeamSwingApp")
+			.withArgs(
+				"--mongo-host=" + mongo.getHost(),
+				"--mongo-port=" + mongo.getFirstMappedPort(),
+				"--db-name=" + CRICKET_DB_NAME,
+				"--db-collection=" + PLAYER_COLLECTION_NAME)
+			.start();
 
-        window = WindowFinder.findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
-            @Override
-            protected boolean isMatching(JFrame frame) {
-                return "Cricket Team Lineup Editor".equals(frame.getTitle()) && frame.isShowing();
-            }
-        }).using(robot());
-    }
+		window = WindowFinder.findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
+			@Override
+			protected boolean isMatching(JFrame frame) {
+				return "Cricket Team Lineup Editor".equals(frame.getTitle()) && frame.isShowing();
+			}
+		}).using(robot());
+	}
 
-    @After
-    public void closeMongoClient() {
-        client.close();
-    }
+	@After
+	public void closeMongoClient() {
+		client.close();
+	}
 
-    @Test
-    @GUITest
-    public void testAddButtonSuccess() {
-        startApp();
-        fillPlayerFields("1", "Junaid Munir", "Batsman");
-        window.button(JButtonMatcher.withText("Add")).click();
-        assertListContainsExactly(new String[] { "Player [id=1, name=Junaid Munir, role=Batsman]" });
-        assertThat(findPlayerById("1"))
-            .usingRecursiveComparison()
-            .isEqualTo(new Player("1", "Junaid Munir", "Batsman"));
-    }
+	@Test
+	@GUITest
+	public void testAddButtonSuccess() {
+		startApp();
+		fillPlayerFields("1", "Junaid Munir", "Batsman");
+		window.button(JButtonMatcher.withText("Add")).click();
+		assertListContainsExactly(new String[] { "Player [id=1, name=Junaid Munir, role=Batsman]" });
+		assertThat(findPlayerById("1"))
+			.usingRecursiveComparison()
+			.isEqualTo(new Player("1", "Junaid Munir", "Batsman"));
+	}
 
-    @Test
-    @GUITest
-    public void testUpdateButtonSuccess() {
-        addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        startApp();
-        // wait for the UI to show the player
-        window.list("playerList").requireItemCount(1);
+	@Test
+	@GUITest
+	public void testUpdateButtonSuccess() {
+		addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+		startApp();
+		// wait for the UI to show the player
+		window.list("playerList").requireItemCount(1);
 
-        window.list("playerList").selectItem(0);
-        window.textBox("nameTextBox").deleteText().enterText("Junaid M");
-        window.textBox("roleTextBox").deleteText().enterText("Captain");
-        window.button(JButtonMatcher.withText("Update")).click();
-        
-        assertListContainsExactly(new String[] { "Player [id=1, name=Junaid M, role=Captain]" });
-        assertThat(findPlayerById("1"))
-            .usingRecursiveComparison()
-            .isEqualTo(new Player("1", "Junaid M", "Captain"));
-    }
+		window.list("playerList").selectItem(0);
+		window.textBox("nameTextBox").deleteText().enterText("Junaid M");
+		window.textBox("roleTextBox").deleteText().enterText("Captain");
+		window.button(JButtonMatcher.withText("Update")).click();
+		
+		assertListContainsExactly(new String[] { "Player [id=1, name=Junaid M, role=Captain]" });
+		assertThat(findPlayerById("1"))
+			.usingRecursiveComparison()
+			.isEqualTo(new Player("1", "Junaid M", "Captain"));
+	}
 
-    @Test
-    @GUITest
-    public void testDeleteButtonSuccess() {
-        addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        startApp();
-        window.list("playerList").requireItemCount(1);
+	@Test
+	@GUITest
+	public void testDeleteButtonSuccess() {
+		addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+		startApp();
+		window.list("playerList").requireItemCount(1);
 
-        window.list("playerList").selectItem(0);
-        window.button(JButtonMatcher.withText("Delete")).click();
-        assertListContainsExactly(new String[] {});
-        assertThat(findPlayerById("1"))
-            .isNull();
-    }
+		window.list("playerList").selectItem(0);
+		window.button(JButtonMatcher.withText("Delete")).click();
+		assertListContainsExactly(new String[] {});
+		assertThat(findPlayerById("1"))
+			.isNull();
+	}
 
-    private void fillPlayerFields(String id, String name, String role) {
-        window.textBox("idTextBox").setText("");
-        window.textBox("idTextBox").enterText(id);
-        window.textBox("nameTextBox").setText("");
-        window.textBox("nameTextBox").enterText(name);
-        window.textBox("roleTextBox").setText("");
-        window.textBox("roleTextBox").enterText(role);
-    }
+	private void fillPlayerFields(String id, String name, String role) {
+		window.textBox("idTextBox").setText("");
+		window.textBox("idTextBox").enterText(id);
+		window.textBox("nameTextBox").setText("");
+		window.textBox("nameTextBox").enterText(name);
+		window.textBox("roleTextBox").setText("");
+		window.textBox("roleTextBox").enterText(role);
+	}
 
-    private void assertListContainsExactly(String[] expectedContents) {
-        assertThat(window.list("playerList").contents())
-            .containsExactly(expectedContents);
-    }
+	private void assertListContainsExactly(String[] expectedContents) {
+		assertThat(window.list("playerList").contents())
+			.containsExactly(expectedContents);
+	}
 
-    private void addTestPlayerToDatabase(String id, String name, String role) {
-        playerCollection.insertOne(
-            new Document()
-                .append("id", id)
-                .append("name", name)
-                .append("role", role));
-    }
+	private void addTestPlayerToDatabase(String id, String name, String role) {
+		playerCollection.insertOne(
+			new Document()
+				.append("id", id)
+				.append("name", name)
+				.append("role", role));
+	}
 
-    private Player findPlayerById(String id) {
-        Document playerDocument = playerCollection.find(Filters.eq("id", id)).first();
-        if (playerDocument == null) {
-            return null;
-        }
-        return new Player(
-            "" + playerDocument.get("id"),
-            "" + playerDocument.get("name"),
-            "" + playerDocument.get("role"));
-    }
+	private Player findPlayerById(String id) {
+		Document playerDocument = playerCollection.find(Filters.eq("id", id)).first();
+		if (playerDocument == null) {
+			return null;
+		}
+		return new Player(
+			"" + playerDocument.get("id"),
+			"" + playerDocument.get("name"),
+			"" + playerDocument.get("role"));
+	}
 }
+
+
