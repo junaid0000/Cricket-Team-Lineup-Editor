@@ -24,6 +24,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import org.assertj.swing.timing.Pause;
+import org.assertj.swing.timing.Condition;
 
 @RunWith(GUITestRunner.class)
 public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
@@ -45,7 +47,9 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
         playerCollection = client
             .getDatabase(CRICKET_DB_NAME)
             .getCollection(PLAYER_COLLECTION_NAME);
+    }
 
+    private void startApp() {
         application("com.cricketteam.app.cricketteam.app.swing.CricketTeamSwingApp")
             .withArgs(
                 "--mongo-host=" + mongo.getHost(),
@@ -57,7 +61,7 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
         window = WindowFinder.findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
             @Override
             protected boolean isMatching(JFrame frame) {
-                return "Cricket Team LineUp".equals(frame.getTitle()) && frame.isShowing();
+                return "Cricket Team Lineup Editor".equals(frame.getTitle()) && frame.isShowing();
             }
         }).using(robot());
     }
@@ -70,9 +74,10 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
     @Test
     @GUITest
     public void testAddButtonSuccess() {
+        startApp();
         fillPlayerFields("1", "Junaid Munir", "Batsman");
         window.button(JButtonMatcher.withText("Add")).click();
-        assertListContainsExactly(new String[] { "1 - Junaid Munir - Batsman" });
+        assertListContainsExactly(new String[] { "Player [id=1, name=Junaid Munir, role=Batsman]" });
         assertThat(findPlayerById("1"))
             .usingRecursiveComparison()
             .isEqualTo(new Player("1", "Junaid Munir", "Batsman"));
@@ -82,7 +87,7 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
     @GUITest
     public void testUpdateButtonSuccess() {
         addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
-        // We do not have a Refresh button, but the app fetches all players on startup
+        startApp();
         // wait for the UI to show the player
         window.list("playerList").requireItemCount(1);
 
@@ -91,7 +96,7 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
         window.textBox("roleTextBox").deleteText().enterText("Captain");
         window.button(JButtonMatcher.withText("Update")).click();
         
-        assertListContainsExactly(new String[] { "1 - Junaid M - Captain" });
+        assertListContainsExactly(new String[] { "Player [id=1, name=Junaid M, role=Captain]" });
         assertThat(findPlayerById("1"))
             .usingRecursiveComparison()
             .isEqualTo(new Player("1", "Junaid M", "Captain"));
@@ -101,6 +106,7 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
     @GUITest
     public void testDeleteButtonSuccess() {
         addTestPlayerToDatabase("1", "Junaid Munir", "Batsman");
+        startApp();
         window.list("playerList").requireItemCount(1);
 
         window.list("playerList").selectItem(0);
@@ -120,6 +126,12 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
     }
 
     private void assertListContainsExactly(String[] expectedContents) {
+        Pause.pause(new Condition("Wait for list to update") {
+            @Override
+            public boolean test() {
+                return window.list("playerList").contents().length == expectedContents.length;
+            }
+        });
         assertThat(window.list("playerList").contents())
             .containsExactly(expectedContents);
     }

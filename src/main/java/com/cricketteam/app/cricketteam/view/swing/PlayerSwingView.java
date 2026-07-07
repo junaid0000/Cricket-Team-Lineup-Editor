@@ -140,6 +140,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
     @Override
     public void showAllPlayers(List<Player> players) {
+        listModel.clear();
         players.forEach(listModel::addElement);
     }
 

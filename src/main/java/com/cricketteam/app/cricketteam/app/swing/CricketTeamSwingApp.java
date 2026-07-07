@@ -47,15 +47,7 @@ public class CricketTeamSwingApp implements Callable<Void> {
 				playerSwingView.setPlayerController(playerController);
 				playerSwingView.setVisible(true);
 				
-				new Thread(() -> {
-					try {
-						playerController.allPlayers();
-					} catch (Exception e) {
-						System.err.println("Could not connect to MongoDB. You can still view the UI!");
-						Logger.getLogger(getClass().getName())
-							.log(Level.SEVERE, "Exception", e);
-					}
-				}).start();
+				playerController.allPlayers();
 			} catch (Exception e) {
 				Logger.getLogger(getClass().getName())
 					.log(Level.SEVERE, "Exception", e);
