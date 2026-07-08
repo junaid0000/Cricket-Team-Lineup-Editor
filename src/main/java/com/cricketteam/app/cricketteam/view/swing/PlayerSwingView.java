@@ -13,6 +13,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 import com.cricketteam.app.cricketteam.model.Player;
 import com.cricketteam.app.cricketteam.view.PlayerView;
@@ -31,7 +32,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 	private DefaultListModel<Player> listModel;
 	private JLabel errorMessageLabel;
 	
-	private com.cricketteam.app.cricketteam.controller.PlayerController playerController;
+	private transient com.cricketteam.app.cricketteam.controller.PlayerController playerController;
 
 	public void setPlayerController(com.cricketteam.app.cricketteam.controller.PlayerController playerController) {
 		this.playerController = playerController;
@@ -39,7 +40,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 	public PlayerSwingView() {
 		setTitle("Cricket Team Lineup Editor");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setSize(400, 400);
 
 		JPanel panel = new JPanel();
@@ -125,17 +126,14 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 		nameTextBox.addKeyListener(btnEnabler);
 		roleTextBox.addKeyListener(btnEnabler);
 
-		addButton.addActionListener(e -> {
-			playerController.newPlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText()));
-		});
+		addButton.addActionListener(e ->
+			playerController.newPlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
 
-		updateButton.addActionListener(e -> {
-			playerController.updatePlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText()));
-		});
+		updateButton.addActionListener(e ->
+			playerController.updatePlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
 
-		deleteButton.addActionListener(e -> {
-			playerController.deletePlayer(playerList.getSelectedValue());
-		});
+		deleteButton.addActionListener(e ->
+			playerController.deletePlayer(playerList.getSelectedValue()));
 	}
 
 	@Override

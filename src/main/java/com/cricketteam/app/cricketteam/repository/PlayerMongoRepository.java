@@ -1,7 +1,6 @@
 package com.cricketteam.app.cricketteam.repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.bson.Document;
@@ -22,7 +21,7 @@ public class PlayerMongoRepository implements PlayerRepository {
 	public List<Player> findAll() {
 		return StreamSupport.stream(playerCollection.find().spliterator(), false)
 				.map(this::fromDocument)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@Override
