@@ -19,6 +19,10 @@ import com.cricketteam.app.cricketteam.view.PlayerView;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
+/**
+ * To run this test from Eclipse, a Docker daemon/Docker Desktop must be running on the host machine.
+ * Testcontainers will automatically spin up the required MongoDB container.
+ */
 public class PlayerControllerIT {
 
 	@ClassRule
@@ -88,3 +92,5 @@ public class PlayerControllerIT {
 		verify(playerView).playerRemoved(player);
 	}
 }
+
+

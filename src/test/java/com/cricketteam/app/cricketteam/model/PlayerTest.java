@@ -6,11 +6,13 @@ import org.junit.Test;
 
 public class PlayerTest {
 
-    @Test
-    public void testPlayerInitialization() {
-        Player player = new Player("1", "Junaid Munir", "Batsman");
-        assertEquals("1", player.getId());
-        assertEquals("Junaid Munir", player.getName());
-        assertEquals("Batsman", player.getRole());
-    }
+	@Test
+	public void testPlayerInitialization() {
+		Player player = new Player("1", "Junaid Munir", "Batsman");
+		assertEquals("1", player.getId());
+		assertEquals("Junaid Munir", player.getName());
+		assertEquals("Batsman", player.getRole());
+	}
 }
+
+

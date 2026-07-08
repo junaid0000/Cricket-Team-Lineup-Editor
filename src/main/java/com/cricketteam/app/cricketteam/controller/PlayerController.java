@@ -6,30 +6,32 @@ import com.cricketteam.app.cricketteam.view.PlayerView;
 
 public class PlayerController {
 
-    private PlayerView playerView;
-    private PlayerRepository playerRepository;
+	private PlayerView playerView;
+	private PlayerRepository playerRepository;
 
-    public PlayerController(PlayerView playerView, PlayerRepository playerRepository) {
-        this.playerView = playerView;
-        this.playerRepository = playerRepository;
-    }
+	public PlayerController(PlayerView playerView, PlayerRepository playerRepository) {
+		this.playerView = playerView;
+		this.playerRepository = playerRepository;
+	}
 
-    public void allPlayers() {
-        playerView.showAllPlayers(playerRepository.findAll());
-    }
+	public void allPlayers() {
+		playerView.showAllPlayers(playerRepository.findAll());
+	}
 
-    public void newPlayer(Player player) {
-        playerRepository.save(player);
-        playerView.playerAdded(player);
-    }
+	public void newPlayer(Player player) {
+		playerRepository.save(player);
+		playerView.playerAdded(player);
+	}
 
-    public void deletePlayer(Player player) {
-        playerRepository.delete(player.getId());
-        playerView.playerRemoved(player);
-    }
+	public void deletePlayer(Player player) {
+		playerRepository.delete(player.getId());
+		playerView.playerRemoved(player);
+	}
 
-    public void updatePlayer(Player player) {
-        playerRepository.update(player);
-        playerView.playerUpdated(player);
-    }
+	public void updatePlayer(Player player) {
+		playerRepository.update(player);
+		playerView.playerUpdated(player);
+	}
 }
+
+
