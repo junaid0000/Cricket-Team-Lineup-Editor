@@ -32,9 +32,6 @@ SonarCloud for code quality (no technical debt).
 GitHub Actions for continuous integration.
 Swing-based user interface.
 
-SonarCloud project: [junaid0000_Cricket-Team-Lineup-Editor](https://sonarcloud.io/project/overview?id=junaid0000_Cricket-Team-Lineup-Editor)
-
-
 ## Build And Test
 
 ```bash
