@@ -27,6 +27,8 @@
     <logback.version>1.2.13</logback.version>
 
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>junaid0000</sonar.organization>
+    <sonar.projectKey>junaid0000_Cricket-Team-Lineup-Editor</sonar.projectKey>
     <sonar.coverage.exclusions>
       **/model/*.*,
       **/CricketTeamSwingApp.*,
@@ -205,6 +207,7 @@
                           <excludes>
                               <exclude>**/model/*.*</exclude>
                               <exclude>**/CricketTeamSwingApp.*</exclude>
+                              <exclude>**/PlayerSwingView.*</exclude>
                           </excludes>
                       </configuration>
                       <executions>

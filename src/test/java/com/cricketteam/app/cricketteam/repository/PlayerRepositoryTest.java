@@ -93,6 +93,17 @@ public class PlayerRepositoryTest {
 	}
 
 	@Test
+	public void testUpdate() {
+		playerCollection.insertOne(new Document().append("id", "1").append("name", "Junaid Munir").append("role", "Batsman"));
+		Player updated = new Player("1", "Junaid Updated", "Captain");
+		repository.update(updated);
+
+		assertThat(playerCollection.find().into(new ArrayList<>()))
+				.extracting(d -> new Player(d.getString("id"), d.getString("name"), d.getString("role")))
+				.containsExactly(updated);
+	}
+
+	@Test
 	public void testDelete() {
 		playerCollection.insertOne(new Document().append("id", "1").append("name", "Junaid Munir").append("role", "Batsman"));
 		repository.delete("1");
