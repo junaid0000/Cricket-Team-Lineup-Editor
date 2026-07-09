@@ -10,7 +10,7 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=junaid0000_Cricket-Team-Lineup-Editor&metric=duplicated_lines_density)](https://sonarcloud.io/component_measures?metric=duplicated_lines_density&id=junaid0000_Cricket-Team-Lineup-Editor)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=junaid0000_Cricket-Team-Lineup-Editor&metric=sqale_index)](https://sonarcloud.io/component_measures?metric=sqale_index&id=junaid0000_Cricket-Team-Lineup-Editor)
 
-**Project** Overview: The application will be a simple  Cricket Team Lineup.
+**Project Overview**: The application will be a simple  Cricket Team Lineup.
 **Player**: playerId, name, role.
 
 **Main Features:**
