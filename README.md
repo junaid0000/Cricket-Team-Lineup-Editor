@@ -10,15 +10,14 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=junaid0000_Cricket-Team-Lineup-Editor&metric=duplicated_lines_density)](https://sonarcloud.io/component_measures?metric=duplicated_lines_density&id=junaid0000_Cricket-Team-Lineup-Editor)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=junaid0000_Cricket-Team-Lineup-Editor&metric=sqale_index)](https://sonarcloud.io/component_measures?metric=sqale_index&id=junaid0000_Cricket-Team-Lineup-Editor)
 
-Project Overview: The application will be a simple  Cricket Team Lineup 
-Editor  . It will manage a single main entity:
-**Player**: playerId, name, jerseyNumber, role
+**Project** Overview: The application will be a simple  Cricket Team Lineup.
+**Player**: playerId, name, role.
 
 **Main Features:**
-Add a new player
-Edit an existing player's details or role
-Update an existing player's details or role 
-Delete a player
+Add a new player.
+Edit an existing player's details or role.
+Update an existing player's details or role .
+Delete a player.
  
 **Tools & Technologies:**
 Java (version 17 ]).
@@ -32,16 +31,15 @@ SonarCloud for code quality (no technical debt).
 GitHub Actions for continuous integration.
 Swing-based user interface.
 
+
 ## Build And Test
 
-```bash
-mvn verify
-```
+| Task | Command |
+| --- | --- |
+| Build without tests | `mvn clean package -DskipTests` |
+| Run unit tests | `mvn clean test` |
+| Run all tests | `mvn clean verify` |
+| Run coverage | `mvn clean verify -Pjacoco` |
+| Run mutation testing | `mvn clean verify -Ppit` |
+| Run without Docker tests | `mvn clean verify -Pskip-testcontainers` |
 
-This runs unit tests, integration tests, and end-to-end tests.
-
-## Coverage
-
-```bash
-mvn verify -Pjacoco
-```
