@@ -43,7 +43,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Run Mutation Testing with PIT
-      run: mvn -B verify -Ppit
+      run: xvfb-run -a mvn -B verify -Ppit
     - name: Send coverage to Coveralls
       run: >
         mvn -B -Pcoveralls coveralls:report
