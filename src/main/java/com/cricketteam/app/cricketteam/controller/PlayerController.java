@@ -6,8 +6,8 @@ import com.cricketteam.app.cricketteam.view.PlayerView;
 
 public class PlayerController {
 
-	private PlayerView playerView;
-	private PlayerRepository playerRepository;
+	private final PlayerView playerView;
+	private final PlayerRepository playerRepository;
 
 	public PlayerController(PlayerView playerView, PlayerRepository playerRepository) {
 		this.playerView = playerView;

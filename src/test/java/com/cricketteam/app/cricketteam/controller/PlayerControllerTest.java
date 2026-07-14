@@ -1,5 +1,6 @@
 package com.cricketteam.app.cricketteam.controller;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +58,7 @@ public class PlayerControllerTest {
 		playerController.newPlayer(player);
 
 		verify(playerView).showError("Already exists with ID 1", player);
-		verify(playerRepository, org.mockito.Mockito.never()).save(player);
+		verify(playerRepository, never()).save(player);
 	}
 
 	@Test
@@ -79,7 +80,7 @@ public class PlayerControllerTest {
 		playerController.deletePlayer(player);
 
 		verify(playerView).showError("No player exists with ID 1", player);
-		verify(playerRepository, org.mockito.Mockito.never()).delete("1");
+		verify(playerRepository, never()).delete("1");
 	}
 
 	@Test
@@ -101,8 +102,6 @@ public class PlayerControllerTest {
 		playerController.updatePlayer(player);
 
 		verify(playerView).showError("No player exists with ID 1", player);
-		verify(playerRepository, org.mockito.Mockito.never()).update(player);
+		verify(playerRepository, never()).update(player);
 	}
 }
-
-

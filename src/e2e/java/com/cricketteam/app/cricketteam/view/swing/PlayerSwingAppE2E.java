@@ -154,9 +154,9 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
 			return null;
 		}
 		return new Player(
-			"" + playerDocument.get("id"),
-			"" + playerDocument.get("name"),
-			"" + playerDocument.get("role"));
+			playerDocument.getString("id"),
+			playerDocument.getString("name"),
+			playerDocument.getString("role"));
 	}
 }
 

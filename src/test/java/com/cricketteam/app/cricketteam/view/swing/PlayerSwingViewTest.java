@@ -1,5 +1,11 @@
 package com.cricketteam.app.cricketteam.view.swing;
 
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
@@ -8,10 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.verify;
 
 import com.cricketteam.app.cricketteam.controller.PlayerController;
 import com.cricketteam.app.cricketteam.model.Player;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PlayerSwingViewTest {
 
@@ -32,7 +39,7 @@ public class PlayerSwingViewTest {
 			return playerSwingView;
 		});
 		window = new FrameFixture(playerSwingView);
-		window.show(); 
+		window.show();
 	}
 
 	@After
@@ -41,57 +48,53 @@ public class PlayerSwingViewTest {
 		closeable.close();
 	}
 
+	private List<Player> getListModelContents() {
+		List<Player> contents = new ArrayList<>();
+		for (int i = 0; i < playerSwingView.listModel.size(); i++) {
+			contents.add(playerSwingView.listModel.getElementAt(i));
+		}
+		return contents;
+	}
+
 	@Test
 	public void testControlsInitialStates() {
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.idTextBox.isEnabled()).isTrue();
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.nameTextBox.isEnabled()).isTrue();
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.roleTextBox.isEnabled()).isTrue();
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.addButton.isEnabled()).isFalse();
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
+		assertThat(playerSwingView.idTextBox.isEnabled()).isTrue();
+		assertThat(playerSwingView.nameTextBox.isEnabled()).isTrue();
+		assertThat(playerSwingView.roleTextBox.isEnabled()).isTrue();
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
 	}
 
 	@Test
 	public void testShowAllPlayersShouldAddPlayerDescriptionsToTheList() {
-		com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
-		com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
-		GuiActionRunner.execute(() -> playerSwingView.showAllPlayers(java.util.Arrays.asList(player1, player2)));
-		java.util.List<Player> listContents = new java.util.ArrayList<>();
-		for (int i = 0; i < playerSwingView.listModel.size(); i++) {
-			listContents.add(playerSwingView.listModel.getElementAt(i));
-		}
-		org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player1, player2);
+		Player player1 = new Player("1", "Junaid Munir", "Batsman");
+		Player player2 = new Player("2", "Babar Azam", "Batsman");
+		GuiActionRunner.execute(() -> playerSwingView.showAllPlayers(Arrays.asList(player1, player2)));
+		assertThat(getListModelContents()).containsExactly(player1, player2);
 	}
 
 	@Test
 	public void testPlayerAddedShouldAddThePlayerToTheListAndResetTheErrorLabel() {
-		com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
+		Player player1 = new Player("1", "Junaid Munir", "Batsman");
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(player1));
-		java.util.List<Player> listContents = new java.util.ArrayList<>();
-		for (int i = 0; i < playerSwingView.listModel.size(); i++) {
-			listContents.add(playerSwingView.listModel.getElementAt(i));
-		}
-		org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player1);
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
+		assertThat(getListModelContents()).containsExactly(player1);
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
 	}
 
 	@Test
 	public void testPlayerRemovedShouldRemoveThePlayerFromTheListAndResetTheErrorLabel() {
-		com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
-		com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
+		Player player1 = new Player("1", "Junaid Munir", "Batsman");
+		Player player2 = new Player("2", "Babar Azam", "Batsman");
 		GuiActionRunner.execute(() -> {
 			playerSwingView.playerAdded(player1);
 			playerSwingView.playerAdded(player2);
 		});
-		
+
 		GuiActionRunner.execute(() -> playerSwingView.playerRemoved(player1));
-		
-		java.util.List<Player> listContents = new java.util.ArrayList<>();
-		for (int i = 0; i < playerSwingView.listModel.size(); i++) {
-			listContents.add(playerSwingView.listModel.getElementAt(i));
-		}
-		org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player2);
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
+
+		assertThat(getListModelContents()).containsExactly(player2);
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
 	}
 
 	@Test
@@ -101,7 +104,7 @@ public class PlayerSwingViewTest {
 			playerSwingView.nameTextBox.setText("Junaid");
 			playerSwingView.roleTextBox.setText("Batsman");
 		});
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.addButton.isEnabled()).isTrue();
+		assertThat(playerSwingView.addButton.isEnabled()).isTrue();
 	}
 
 	@Test
@@ -111,8 +114,8 @@ public class PlayerSwingViewTest {
 			playerSwingView.nameTextBox.setText("Junaid");
 			playerSwingView.roleTextBox.setText(" ");
 		});
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.addButton.isEnabled()).isFalse();
-		
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
+
 		GuiActionRunner.execute(() -> {
 			playerSwingView.idTextBox.setText("");
 			playerSwingView.nameTextBox.setText("");
@@ -124,7 +127,7 @@ public class PlayerSwingViewTest {
 			playerSwingView.nameTextBox.setText("Junaid");
 			playerSwingView.roleTextBox.setText("Batsman");
 		});
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.addButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
 
 		GuiActionRunner.execute(() -> {
 			playerSwingView.idTextBox.setText("");
@@ -137,7 +140,7 @@ public class PlayerSwingViewTest {
 			playerSwingView.nameTextBox.setText(" ");
 			playerSwingView.roleTextBox.setText("Batsman");
 		});
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.addButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
 	}
 
 	@Test
@@ -155,9 +158,9 @@ public class PlayerSwingViewTest {
 	public void testDeleteButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
 		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.deleteButton.isEnabled()).isTrue();
+		assertThat(playerSwingView.deleteButton.isEnabled()).isTrue();
 		GuiActionRunner.execute(() -> playerSwingView.playerList.clearSelection());
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
 	}
 
 	@Test
@@ -178,19 +181,19 @@ public class PlayerSwingViewTest {
 		Player player = new Player("1", "Junaid", "Batsman");
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
 		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.idTextBox.getText()).isEqualTo("1");
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.idTextBox.isEnabled()).isFalse();
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.nameTextBox.getText()).isEqualTo("Junaid");
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.roleTextBox.getText()).isEqualTo("Batsman");
+		assertThat(playerSwingView.idTextBox.getText()).isEqualTo("1");
+		assertThat(playerSwingView.idTextBox.isEnabled()).isFalse();
+		assertThat(playerSwingView.nameTextBox.getText()).isEqualTo("Junaid");
+		assertThat(playerSwingView.roleTextBox.getText()).isEqualTo("Batsman");
 	}
 
 	@Test
 	public void testUpdateButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
 		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.updateButton.isEnabled()).isTrue();
+		assertThat(playerSwingView.updateButton.isEnabled()).isTrue();
 		GuiActionRunner.execute(() -> playerSwingView.playerList.clearSelection());
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.updateButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.updateButton.isEnabled()).isFalse();
 	}
 
 	@Test
@@ -210,8 +213,6 @@ public class PlayerSwingViewTest {
 	public void testShowErrorShouldShowFormattedErrorMessageInLabel() {
 		Player player = new Player("1", "Junaid", "Batsman");
 		GuiActionRunner.execute(() -> playerSwingView.showError("Already exists with ID 1", player));
-		org.assertj.core.api.Assertions.assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo("Error: Already exists with ID 1");
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo("Error: Already exists with ID 1");
 	}
 }
-
-
