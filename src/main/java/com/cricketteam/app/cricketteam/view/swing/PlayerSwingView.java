@@ -22,15 +22,15 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTextField idTextBox;
-	private JTextField nameTextBox;
-	private JTextField roleTextBox;
-	private JButton addButton;
-	private JButton updateButton;
-	private JButton deleteButton;
-	private JList<Player> playerList;
-	private DefaultListModel<Player> listModel;
-	private JLabel errorMessageLabel;
+	JTextField idTextBox;
+	JTextField nameTextBox;
+	JTextField roleTextBox;
+	JButton addButton;
+	JButton updateButton;
+	JButton deleteButton;
+	JList<Player> playerList;
+	DefaultListModel<Player> listModel;
+	JLabel errorMessageLabel;
 	
 	private transient com.cricketteam.app.cricketteam.controller.PlayerController playerController;
 
@@ -93,19 +93,19 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 		playerList.setName("playerList");
 		
 		playerList.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting()) {
-				boolean isSelected = playerList.getSelectedIndex() != -1;
-				if (isSelected) {
-					Player selectedPlayer = playerList.getSelectedValue();
+			boolean isSelected = playerList.getSelectedIndex() != -1;
+			if (isSelected) {
+				Player selectedPlayer = playerList.getSelectedValue();
+				if (selectedPlayer != null) {
 					idTextBox.setText(selectedPlayer.getId());
 					idTextBox.setEnabled(false);
 					nameTextBox.setText(selectedPlayer.getName());
 					roleTextBox.setText(selectedPlayer.getRole());
-				} else {
-					idTextBox.setEnabled(true);
 				}
-				updateButtonStates();
+			} else {
+				idTextBox.setEnabled(true);
 			}
+			updateButtonStates();
 		});
 		
 		JScrollPane scrollPane = new JScrollPane(playerList);
@@ -117,16 +117,24 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 		add(panel, BorderLayout.CENTER);
 
-		java.awt.event.KeyAdapter btnEnabler = new java.awt.event.KeyAdapter() {
+		javax.swing.event.DocumentListener btnEnabler = new javax.swing.event.DocumentListener() {
 			@Override
-			public void keyReleased(java.awt.event.KeyEvent e) {
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				updateButtonStates();
+			}
+			@Override
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				updateButtonStates();
+			}
+			@Override
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
 				updateButtonStates();
 			}
 		};
 
-		idTextBox.addKeyListener(btnEnabler);
-		nameTextBox.addKeyListener(btnEnabler);
-		roleTextBox.addKeyListener(btnEnabler);
+		idTextBox.getDocument().addDocumentListener(btnEnabler);
+		nameTextBox.getDocument().addDocumentListener(btnEnabler);
+		roleTextBox.getDocument().addDocumentListener(btnEnabler);
 
 		addButton.addActionListener(e ->
 			playerController.newPlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
@@ -165,6 +173,11 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 			}
 		}
 		errorMessageLabel.setText(" ");
+	}
+
+	@Override
+	public void showError(String message, Player player) {
+		errorMessageLabel.setText("Error: " + message);
 	}
 
 	private void updateButtonStates() {

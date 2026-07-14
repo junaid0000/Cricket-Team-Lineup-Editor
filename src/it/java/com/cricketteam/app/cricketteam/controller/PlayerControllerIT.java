@@ -91,6 +91,28 @@ public class PlayerControllerIT {
 		assertThat(playerRepository.findById("1")).isNull();
 		verify(playerView).playerRemoved(player);
 	}
+
+	@Test
+	public void testNewPlayerWhenAlreadyExistsShouldShowError() {
+		Player player = new Player("1", "Junaid Munir", "Batsman");
+		playerRepository.save(player);
+		playerController.newPlayer(player);
+		verify(playerView).showError("Already exists with ID 1", player);
+	}
+
+	@Test
+	public void testUpdatePlayerWhenDoesNotExistShouldShowError() {
+		Player player = new Player("1", "Junaid Munir", "Batsman");
+		playerController.updatePlayer(player);
+		verify(playerView).showError("No player exists with ID 1", player);
+	}
+
+	@Test
+	public void testDeletePlayerWhenDoesNotExistShouldShowError() {
+		Player player = new Player("1", "Junaid Munir", "Batsman");
+		playerController.deletePlayer(player);
+		verify(playerView).showError("No player exists with ID 1", player);
+	}
 }
 
 

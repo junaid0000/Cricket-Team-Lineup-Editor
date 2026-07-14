@@ -41,25 +41,67 @@ public class PlayerControllerTest {
 	@Test
 	public void testNewPlayer() {
 		Player player = new Player("1", "Junaid Munir", "Batsman");
+		when(playerRepository.findById("1")).thenReturn(null);
+
 		playerController.newPlayer(player);
+
 		verify(playerRepository).save(player);
 		verify(playerView).playerAdded(player);
 	}
 
 	@Test
+	public void testNewPlayerWhenAlreadyExistsShouldShowErrorAndNotSave() {
+		Player player = new Player("1", "Junaid Munir", "Batsman");
+		when(playerRepository.findById("1")).thenReturn(player);
+
+		playerController.newPlayer(player);
+
+		verify(playerView).showError("Already exists with ID 1", player);
+		verify(playerRepository, org.mockito.Mockito.never()).save(player);
+	}
+
+	@Test
 	public void testDeletePlayer() {
 		Player player = new Player("1", "Junaid Munir", "Batsman");
+		when(playerRepository.findById("1")).thenReturn(player);
+
 		playerController.deletePlayer(player);
+
 		verify(playerRepository).delete("1");
 		verify(playerView).playerRemoved(player);
 	}
 
 	@Test
+	public void testDeletePlayerWhenDoesNotExistShouldShowErrorAndNotDelete() {
+		Player player = new Player("1", "Junaid Munir", "Batsman");
+		when(playerRepository.findById("1")).thenReturn(null);
+
+		playerController.deletePlayer(player);
+
+		verify(playerView).showError("No player exists with ID 1", player);
+		verify(playerRepository, org.mockito.Mockito.never()).delete("1");
+	}
+
+	@Test
 	public void testUpdatePlayerShouldDelegateToRepositoryAndNotifyView() {
 		Player player = new Player("1", "Junaid Munir", "Captain");
+		when(playerRepository.findById("1")).thenReturn(player);
+
 		playerController.updatePlayer(player);
+
 		verify(playerRepository).update(player);
 		verify(playerView).playerUpdated(player);
+	}
+
+	@Test
+	public void testUpdatePlayerWhenDoesNotExistShouldShowErrorAndNotUpdate() {
+		Player player = new Player("1", "Junaid Munir", "Captain");
+		when(playerRepository.findById("1")).thenReturn(null);
+
+		playerController.updatePlayer(player);
+
+		verify(playerView).showError("No player exists with ID 1", player);
+		verify(playerRepository, org.mockito.Mockito.never()).update(player);
 	}
 }
 

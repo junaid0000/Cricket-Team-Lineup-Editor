@@ -14,6 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <argLine></argLine>
     <picocli.version>4.7.5</picocli.version>
     <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
     <pitest.maven.plugin.version>1.17.2</pitest.maven.plugin.version>
@@ -125,6 +126,15 @@
               <version>${maven.surefire.plugin.version}</version>
               <configuration>
                   <useModulePath>false</useModulePath>
+                  <argLine>
+                      @{argLine}
+                      --add-opens=java.base/java.util=ALL-UNNAMED
+                      --add-opens=java.desktop/sun.awt=ALL-UNNAMED
+                      --add-opens=java.desktop/java.awt=ALL-UNNAMED
+                      --add-opens=java.desktop/javax.swing=ALL-UNNAMED
+                      --add-opens=java.desktop/javax.swing.text=ALL-UNNAMED
+                      --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED
+                  </argLine>
                   <includes>
                       <include>**/*Test.java</include>
                   </includes>
@@ -158,6 +168,17 @@
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-failsafe-plugin</artifactId>
               <version>${maven.failsafe.plugin.version}</version>
+              <configuration>
+                  <argLine>
+                      @{argLine}
+                      --add-opens=java.base/java.util=ALL-UNNAMED
+                      --add-opens=java.desktop/sun.awt=ALL-UNNAMED
+                      --add-opens=java.desktop/java.awt=ALL-UNNAMED
+                      --add-opens=java.desktop/javax.swing=ALL-UNNAMED
+                      --add-opens=java.desktop/javax.swing.text=ALL-UNNAMED
+                      --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED
+                  </argLine>
+              </configuration>
               <executions>
                   <execution>
                       <id>default-it</id>
@@ -249,6 +270,14 @@
                           <timestampedReports>false</timestampedReports>
                           <timeoutConstant>20000</timeoutConstant>
                           <timeoutFactor>3.0</timeoutFactor>
+                          <jvmArgs>
+                              <jvmArg>--add-opens=java.base/java.util=ALL-UNNAMED</jvmArg>
+                              <jvmArg>--add-opens=java.desktop/sun.awt=ALL-UNNAMED</jvmArg>
+                              <jvmArg>--add-opens=java.desktop/java.awt=ALL-UNNAMED</jvmArg>
+                              <jvmArg>--add-opens=java.desktop/javax.swing=ALL-UNNAMED</jvmArg>
+                              <jvmArg>--add-opens=java.desktop/javax.swing.text=ALL-UNNAMED</jvmArg>
+                              <jvmArg>--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED</jvmArg>
+                          </jvmArgs>
                       </configuration>
                       <executions>
                           <execution>

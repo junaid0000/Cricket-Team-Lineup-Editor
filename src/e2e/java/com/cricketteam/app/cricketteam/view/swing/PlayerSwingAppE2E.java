@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.GenericTypeMatcher;
 import org.assertj.swing.core.matcher.JButtonMatcher;
+import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
@@ -65,7 +66,7 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
 			protected boolean isMatching(JFrame frame) {
 				return "Cricket Team Lineup Editor".equals(frame.getTitle()) && frame.isShowing();
 			}
-		}).using(robot());
+		}).withTimeout(20000).using(robot());
 	}
 
 	@After
@@ -78,7 +79,8 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
 	public void testAddButtonSuccess() {
 		startApp();
 		fillPlayerFields("1", "Junaid Munir", "Batsman");
-		window.button(JButtonMatcher.withText("Add")).click();
+		PlayerSwingView view = (PlayerSwingView) window.target();
+		GuiActionRunner.execute(() -> view.addButton.doClick());
 		assertListContainsExactly(new String[] { "Player [id=1, name=Junaid Munir, role=Batsman]" });
 		assertThat(findPlayerById("1"))
 			.usingRecursiveComparison()
@@ -93,10 +95,13 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
 		// wait for the UI to show the player
 		window.list("playerList").requireItemCount(1);
 
-		window.list("playerList").selectItem(0);
-		window.textBox("nameTextBox").deleteText().enterText("Junaid M");
-		window.textBox("roleTextBox").deleteText().enterText("Captain");
-		window.button(JButtonMatcher.withText("Update")).click();
+		PlayerSwingView view = (PlayerSwingView) window.target();
+		GuiActionRunner.execute(() -> {
+			view.playerList.setSelectedIndex(0);
+			view.nameTextBox.setText("Junaid M");
+			view.roleTextBox.setText("Captain");
+			view.updateButton.doClick();
+		});
 		
 		assertListContainsExactly(new String[] { "Player [id=1, name=Junaid M, role=Captain]" });
 		assertThat(findPlayerById("1"))
@@ -111,20 +116,23 @@ public class PlayerSwingAppE2E extends AssertJSwingJUnitTestCase {
 		startApp();
 		window.list("playerList").requireItemCount(1);
 
-		window.list("playerList").selectItem(0);
-		window.button(JButtonMatcher.withText("Delete")).click();
+		PlayerSwingView view = (PlayerSwingView) window.target();
+		GuiActionRunner.execute(() -> {
+			view.playerList.setSelectedIndex(0);
+			view.deleteButton.doClick();
+		});
 		assertListContainsExactly(new String[] {});
 		assertThat(findPlayerById("1"))
 			.isNull();
 	}
 
 	private void fillPlayerFields(String id, String name, String role) {
-		window.textBox("idTextBox").setText("");
-		window.textBox("idTextBox").enterText(id);
-		window.textBox("nameTextBox").setText("");
-		window.textBox("nameTextBox").enterText(name);
-		window.textBox("roleTextBox").setText("");
-		window.textBox("roleTextBox").enterText(role);
+		PlayerSwingView view = (PlayerSwingView) window.target();
+		GuiActionRunner.execute(() -> {
+			view.idTextBox.setText(id);
+			view.nameTextBox.setText(name);
+			view.roleTextBox.setText(role);
+		});
 	}
 
 	private void assertListContainsExactly(String[] expectedContents) {

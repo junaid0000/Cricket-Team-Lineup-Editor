@@ -19,16 +19,28 @@ public class PlayerController {
 	}
 
 	public void newPlayer(Player player) {
+		if (playerRepository.findById(player.getId()) != null) {
+			playerView.showError("Already exists with ID " + player.getId(), player);
+			return;
+		}
 		playerRepository.save(player);
 		playerView.playerAdded(player);
 	}
 
 	public void deletePlayer(Player player) {
+		if (playerRepository.findById(player.getId()) == null) {
+			playerView.showError("No player exists with ID " + player.getId(), player);
+			return;
+		}
 		playerRepository.delete(player.getId());
 		playerView.playerRemoved(player);
 	}
 
 	public void updatePlayer(Player player) {
+		if (playerRepository.findById(player.getId()) == null) {
+			playerView.showError("No player exists with ID " + player.getId(), player);
+			return;
+		}
 		playerRepository.update(player);
 		playerView.playerUpdated(player);
 	}
