@@ -14,7 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import com.cricketteam.app.cricketteam.controller.PlayerController;
 import com.cricketteam.app.cricketteam.model.Player;
 import com.cricketteam.app.cricketteam.view.PlayerView;
 
@@ -32,9 +35,9 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 	DefaultListModel<Player> listModel;
 	JLabel errorMessageLabel;
 	
-	private transient com.cricketteam.app.cricketteam.controller.PlayerController playerController;
+	private transient PlayerController playerController;
 
-	public void setPlayerController(com.cricketteam.app.cricketteam.controller.PlayerController playerController) {
+	public void setPlayerController(PlayerController playerController) {
 		this.playerController = playerController;
 	}
 
@@ -117,17 +120,17 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 		add(panel, BorderLayout.CENTER);
 
-		javax.swing.event.DocumentListener btnEnabler = new javax.swing.event.DocumentListener() {
+		DocumentListener btnEnabler = new DocumentListener() {
 			@Override
-			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+			public void insertUpdate(DocumentEvent e) {
 				updateButtonStates();
 			}
 			@Override
-			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+			public void removeUpdate(DocumentEvent e) {
 				updateButtonStates();
 			}
 			@Override
-			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+			public void changedUpdate(DocumentEvent e) {
 				updateButtonStates();
 			}
 		};
