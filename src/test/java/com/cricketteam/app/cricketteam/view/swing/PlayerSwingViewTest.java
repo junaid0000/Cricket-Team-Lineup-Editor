@@ -229,4 +229,39 @@ public class PlayerSwingViewTest extends AssertJSwingJUnitTestCase {
 		GuiActionRunner.execute(() -> playerSwingView.showError("Already exists with ID 1", player));
 		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo("Error: Already exists with ID 1");
 	}
+
+	@Test
+	public void testShowErrorWithMessageOnlyShouldShowFormattedErrorMessageInLabel() {
+		GuiActionRunner.execute(() -> playerSwingView.showError("Already exists with ID 1"));
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo("Error: Already exists with ID 1");
+	}
+
+	@Test
+	public void testChangedUpdateShouldTriggerUpdateButtonStates() {
+		GuiActionRunner.execute(() -> playerSwingView.btnEnabler.changedUpdate(null));
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
+	}
+
+	@Test
+	public void testPlayerUpdatedWhenPlayerInListShouldUpdateListModelAndResetError() {
+		Player player1 = new Player("1", "Junaid", "Batsman");
+		Player player2 = new Player("2", "Ali", "Bowler");
+		GuiActionRunner.execute(() -> {
+			playerSwingView.listModel.addElement(player1);
+			playerSwingView.listModel.addElement(player2);
+		});
+		Player updatedPlayer1 = new Player("1", "Junaid Munir", "Captain");
+		GuiActionRunner.execute(() -> playerSwingView.playerUpdated(updatedPlayer1));
+		assertThat(playerSwingView.listModel.getElementAt(0)).isEqualTo(updatedPlayer1);
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
+	}
+
+	@Test
+	public void testPlayerUpdatedWhenPlayerNotInListShouldResetError() {
+		Player player1 = new Player("1", "Junaid", "Batsman");
+		GuiActionRunner.execute(() -> playerSwingView.listModel.addElement(player1));
+		Player otherPlayer = new Player("2", "Ali", "Bowler");
+		GuiActionRunner.execute(() -> playerSwingView.playerUpdated(otherPlayer));
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
+	}
 }
