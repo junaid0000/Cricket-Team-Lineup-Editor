@@ -126,8 +126,12 @@
               <version>${maven.surefire.plugin.version}</version>
               <configuration>
                   <useModulePath>false</useModulePath>
+                  <environmentVariables>
+                      <DISPLAY>${env.DISPLAY}</DISPLAY>
+                  </environmentVariables>
                   <argLine>
                       @{argLine}
+                      -Djava.awt.headless=false
                       --add-opens=java.base/java.lang=ALL-UNNAMED
                       --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
                       --add-opens=java.base/java.util=ALL-UNNAMED
@@ -173,8 +177,12 @@
               <artifactId>maven-failsafe-plugin</artifactId>
               <version>${maven.failsafe.plugin.version}</version>
               <configuration>
+                  <environmentVariables>
+                      <DISPLAY>${env.DISPLAY}</DISPLAY>
+                  </environmentVariables>
                   <argLine>
                       @{argLine}
+                      -Djava.awt.headless=false
                       --add-opens=java.base/java.lang=ALL-UNNAMED
                       --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
                       --add-opens=java.base/java.util=ALL-UNNAMED
