@@ -114,9 +114,9 @@ public class PlayerMongoRepositoryTestcontainersIT {
 	private List<Player> readAllPlayersFromDatabase() {
 		return StreamSupport.stream(playerCollection.find().spliterator(), false)
 			.map(d -> new Player(
-				"" + d.get("id"),
-				"" + d.get("name"),
-				"" + d.get("role")))
+				d.getString("id"),
+				d.getString("name"),
+				d.getString("role")))
 			.toList();
 	}
 }

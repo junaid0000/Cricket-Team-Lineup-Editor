@@ -8,10 +8,11 @@ import org.bson.Document;
 import com.cricketteam.app.cricketteam.model.Player;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 
 public class PlayerMongoRepository implements PlayerRepository {
 
-	private MongoCollection<Document> playerCollection;
+	private final MongoCollection<Document> playerCollection;
 
 	public PlayerMongoRepository(MongoClient client, String databaseName, String collectionName) {
 		this.playerCollection = client.getDatabase(databaseName).getCollection(collectionName);
@@ -26,7 +27,7 @@ public class PlayerMongoRepository implements PlayerRepository {
 
 	@Override
 	public Player findById(String id) {
-		Document d = playerCollection.find(com.mongodb.client.model.Filters.eq("id", id)).first();
+		Document d = playerCollection.find(Filters.eq("id", id)).first();
 		if (d != null) {
 			return fromDocument(d);
 		}
@@ -43,7 +44,7 @@ public class PlayerMongoRepository implements PlayerRepository {
 
 	@Override
 	public void update(Player player) {
-		playerCollection.replaceOne(com.mongodb.client.model.Filters.eq("id", player.getId()),
+		playerCollection.replaceOne(Filters.eq("id", player.getId()),
 				new Document()
 						.append("id", player.getId())
 						.append("name", player.getName())
@@ -52,12 +53,10 @@ public class PlayerMongoRepository implements PlayerRepository {
 
 	@Override
 	public void delete(String id) {
-		playerCollection.deleteOne(com.mongodb.client.model.Filters.eq("id", id));
+		playerCollection.deleteOne(Filters.eq("id", id));
 	}
 
 	private Player fromDocument(Document d) {
 		return new Player(d.getString("id"), d.getString("name"), d.getString("role"));
 	}
 }
-
-

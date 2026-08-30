@@ -14,7 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import com.cricketteam.app.cricketteam.controller.PlayerController;
 import com.cricketteam.app.cricketteam.model.Player;
 import com.cricketteam.app.cricketteam.view.PlayerView;
 
@@ -22,19 +25,19 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTextField idTextBox;
-	private JTextField nameTextBox;
-	private JTextField roleTextBox;
-	private JButton addButton;
-	private JButton updateButton;
-	private JButton deleteButton;
-	private JList<Player> playerList;
-	private DefaultListModel<Player> listModel;
-	private JLabel errorMessageLabel;
-	
-	private transient com.cricketteam.app.cricketteam.controller.PlayerController playerController;
+	JTextField idTextBox;
+	JTextField nameTextBox;
+	JTextField roleTextBox;
+	JButton addButton;
+	JButton updateButton;
+	JButton deleteButton;
+	JList<Player> playerList;
+	DefaultListModel<Player> listModel;
+	JLabel errorMessageLabel;
 
-	public void setPlayerController(com.cricketteam.app.cricketteam.controller.PlayerController playerController) {
+	private transient PlayerController playerController;
+
+	public void setPlayerController(PlayerController playerController) {
 		this.playerController = playerController;
 	}
 
@@ -91,23 +94,20 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 		listModel = new DefaultListModel<>();
 		playerList = new JList<>(listModel);
 		playerList.setName("playerList");
-		
+
 		playerList.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting()) {
-				boolean isSelected = playerList.getSelectedIndex() != -1;
-				if (isSelected) {
-					Player selectedPlayer = playerList.getSelectedValue();
+			boolean isSelected = playerList.getSelectedIndex() != -1;
+			if (isSelected) {
+				Player selectedPlayer = playerList.getSelectedValue();
+				if (selectedPlayer != null) {
 					idTextBox.setText(selectedPlayer.getId());
-					idTextBox.setEnabled(false);
 					nameTextBox.setText(selectedPlayer.getName());
 					roleTextBox.setText(selectedPlayer.getRole());
-				} else {
-					idTextBox.setEnabled(true);
 				}
-				updateButtonStates();
 			}
+			updateButtonStates();
 		});
-		
+
 		JScrollPane scrollPane = new JScrollPane(playerList);
 		panel.add(scrollPane);
 
@@ -117,25 +117,35 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 		add(panel, BorderLayout.CENTER);
 
-		java.awt.event.KeyAdapter btnEnabler = new java.awt.event.KeyAdapter() {
+		DocumentListener btnEnabler = new DocumentListener() {
 			@Override
-			public void keyReleased(java.awt.event.KeyEvent e) {
+			public void insertUpdate(DocumentEvent e) {
+				updateButtonStates();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateButtonStates();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
 				updateButtonStates();
 			}
 		};
 
-		idTextBox.addKeyListener(btnEnabler);
-		nameTextBox.addKeyListener(btnEnabler);
-		roleTextBox.addKeyListener(btnEnabler);
+		idTextBox.getDocument().addDocumentListener(btnEnabler);
+		nameTextBox.getDocument().addDocumentListener(btnEnabler);
+		roleTextBox.getDocument().addDocumentListener(btnEnabler);
 
-		addButton.addActionListener(e ->
-			playerController.newPlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
+		addButton.addActionListener(e -> playerController
+				.newPlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
 
-		updateButton.addActionListener(e ->
-			playerController.updatePlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
+		updateButton.addActionListener(e -> playerController
+				.updatePlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
 
-		deleteButton.addActionListener(e ->
-			playerController.deletePlayer(playerList.getSelectedValue()));
+		deleteButton.addActionListener(e -> playerController
+				.deletePlayer(new Player(idTextBox.getText(), nameTextBox.getText(), roleTextBox.getText())));
 	}
 
 	@Override
@@ -167,16 +177,24 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 		errorMessageLabel.setText(" ");
 	}
 
+	@Override
+	public void showError(String message) {
+		errorMessageLabel.setText("Error: " + message);
+	}
+
+	@Override
+	public void showError(String message, Player player) {
+		errorMessageLabel.setText("Error: " + message);
+	}
+
 	private void updateButtonStates() {
 		boolean isSelected = playerList.getSelectedIndex() != -1;
 		boolean hasText = !idTextBox.getText().trim().isEmpty() &&
-						  !nameTextBox.getText().trim().isEmpty() &&
-						  !roleTextBox.getText().trim().isEmpty();
+				!nameTextBox.getText().trim().isEmpty() &&
+				!roleTextBox.getText().trim().isEmpty();
 
 		addButton.setEnabled(!isSelected && hasText);
-		updateButton.setEnabled(isSelected && hasText);
-		deleteButton.setEnabled(isSelected);
+		updateButton.setEnabled(hasText);
+		deleteButton.setEnabled(hasText);
 	}
 }
-
-

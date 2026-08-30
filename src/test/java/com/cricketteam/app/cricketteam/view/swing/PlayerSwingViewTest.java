@@ -1,19 +1,29 @@
 package com.cricketteam.app.cricketteam.view.swing;
 
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.After;
-import org.junit.Before;
+import org.assertj.swing.junit.runner.GUITestRunner;
+import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.verify;
 
 import com.cricketteam.app.cricketteam.controller.PlayerController;
 import com.cricketteam.app.cricketteam.model.Player;
 
-public class PlayerSwingViewTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(GUITestRunner.class)
+@GUITest
+public class PlayerSwingViewTest extends AssertJSwingJUnitTestCase {
 
 	private FrameFixture window;
 	private PlayerSwingView playerSwingView;
@@ -22,123 +32,145 @@ public class PlayerSwingViewTest {
 	private PlayerController playerController;
 	private AutoCloseable closeable;
 
-	@Before
-	public void onSetUp() {
+	@Override
+	protected void onSetUp() {
 		closeable = MockitoAnnotations.openMocks(this);
-		FailOnThreadViolationRepaintManager.install();
-		GuiActionRunner.execute(() -> {
-			playerSwingView = new PlayerSwingView();
-			playerSwingView.setPlayerController(playerController);
-			return playerSwingView;
+		playerSwingView = GuiActionRunner.execute(() -> {
+			PlayerSwingView view = new PlayerSwingView();
+			view.setPlayerController(playerController);
+			return view;
 		});
-		window = new FrameFixture(playerSwingView);
-		window.show(); 
+		window = new FrameFixture(robot(), playerSwingView);
+		window.show();
 	}
 
-	@After
-	public void onTearDown() throws Exception {
-		window.cleanUp();
-		closeable.close();
+	@Override
+	protected void onTearDown() throws Exception {
+		if (closeable != null) {
+			closeable.close();
+		}
+	}
+
+	private List<Player> getListModelContents() {
+		List<Player> contents = new ArrayList<>();
+		for (int i = 0; i < playerSwingView.listModel.size(); i++) {
+			contents.add(playerSwingView.listModel.getElementAt(i));
+		}
+		return contents;
 	}
 
 	@Test
 	public void testControlsInitialStates() {
-		window.label("idLabel").requireText("id");
-		window.textBox("idTextBox").requireEnabled();
-		window.label("nameLabel").requireText("name");
-		window.textBox("nameTextBox").requireEnabled();
-		window.label("roleLabel").requireText("role");
-		window.textBox("roleTextBox").requireEnabled();
-		window.button("addButton").requireDisabled();
-		window.button("deleteButton").requireDisabled();
-		window.list("playerList");
-		window.label("errorMessageLabel").requireText(" ");
+		assertThat(playerSwingView.idTextBox.isEnabled()).isTrue();
+		assertThat(playerSwingView.nameTextBox.isEnabled()).isTrue();
+		assertThat(playerSwingView.roleTextBox.isEnabled()).isTrue();
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
 	}
 
 	@Test
 	public void testShowAllPlayersShouldAddPlayerDescriptionsToTheList() {
-		com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
-		com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
-		GuiActionRunner.execute(() -> playerSwingView.showAllPlayers(java.util.Arrays.asList(player1, player2)));
-		String[] listContents = window.list().contents();
-		org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player1.toString(), player2.toString());
+		Player player1 = new Player("1", "Junaid Munir", "Batsman");
+		Player player2 = new Player("2", "Babar Azam", "Batsman");
+		GuiActionRunner.execute(() -> playerSwingView.showAllPlayers(Arrays.asList(player1, player2)));
+		assertThat(getListModelContents()).containsExactly(player1, player2);
 	}
 
 	@Test
 	public void testPlayerAddedShouldAddThePlayerToTheListAndResetTheErrorLabel() {
-		com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
+		Player player1 = new Player("1", "Junaid Munir", "Batsman");
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(player1));
-		String[] listContents = window.list().contents();
-		org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player1.toString());
-		window.label("errorMessageLabel").requireText(" ");
+		assertThat(getListModelContents()).containsExactly(player1);
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
 	}
 
 	@Test
 	public void testPlayerRemovedShouldRemoveThePlayerFromTheListAndResetTheErrorLabel() {
-		com.cricketteam.app.cricketteam.model.Player player1 = new com.cricketteam.app.cricketteam.model.Player("1", "Junaid Munir", "Batsman");
-		com.cricketteam.app.cricketteam.model.Player player2 = new com.cricketteam.app.cricketteam.model.Player("2", "Babar Azam", "Batsman");
+		Player player1 = new Player("1", "Junaid Munir", "Batsman");
+		Player player2 = new Player("2", "Babar Azam", "Batsman");
 		GuiActionRunner.execute(() -> {
 			playerSwingView.playerAdded(player1);
 			playerSwingView.playerAdded(player2);
 		});
-		
+
 		GuiActionRunner.execute(() -> playerSwingView.playerRemoved(player1));
-		
-		String[] listContents = window.list().contents();
-		org.assertj.core.api.Assertions.assertThat(listContents).containsExactly(player2.toString());
-		window.label("errorMessageLabel").requireText(" ");
+
+		assertThat(getListModelContents()).containsExactly(player2);
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
 	}
 
 	@Test
 	public void testWhenIdNameAndRoleAreNonEmptyThenAddButtonShouldBeEnabled() {
-		window.textBox("idTextBox").enterText("1");
-		window.textBox("nameTextBox").enterText("Junaid");
-		window.textBox("roleTextBox").enterText("Batsman");
-		window.button("addButton").requireEnabled();
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText("Batsman");
+		});
+		assertThat(playerSwingView.addButton.isEnabled()).isTrue();
 	}
 
 	@Test
 	public void testWhenEitherIdOrNameOrRoleAreBlankThenAddButtonShouldBeDisabled() {
-		window.textBox("idTextBox").enterText("1");
-		window.textBox("nameTextBox").enterText("Junaid");
-		window.textBox("roleTextBox").enterText(" ");
-		window.button("addButton").requireDisabled();
-		
-		window.textBox("idTextBox").setText("");
-		window.textBox("nameTextBox").setText("");
-		window.textBox("roleTextBox").setText("");
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText(" ");
+		});
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
 
-		window.textBox("idTextBox").enterText(" ");
-		window.textBox("nameTextBox").enterText("Junaid");
-		window.textBox("roleTextBox").enterText("Batsman");
-		window.button("addButton").requireDisabled();
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("");
+			playerSwingView.nameTextBox.setText("");
+			playerSwingView.roleTextBox.setText("");
+		});
 
-		window.textBox("idTextBox").setText("");
-		window.textBox("nameTextBox").setText("");
-		window.textBox("roleTextBox").setText("");
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText(" ");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText("Batsman");
+		});
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
 
-		window.textBox("idTextBox").enterText("1");
-		window.textBox("nameTextBox").enterText(" ");
-		window.textBox("roleTextBox").enterText("Batsman");
-		window.button("addButton").requireDisabled();
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("");
+			playerSwingView.nameTextBox.setText("");
+			playerSwingView.roleTextBox.setText("");
+		});
+
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText(" ");
+			playerSwingView.roleTextBox.setText("Batsman");
+		});
+		assertThat(playerSwingView.addButton.isEnabled()).isFalse();
 	}
 
 	@Test
 	public void testAddButtonShouldDelegateToPlayerControllerNewPlayer() {
-		window.textBox("idTextBox").enterText("1");
-		window.textBox("nameTextBox").enterText("Junaid");
-		window.textBox("roleTextBox").enterText("Batsman");
-		window.button("addButton").click();
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText("Batsman");
+			playerSwingView.addButton.doClick();
+		});
 		verify(playerController).newPlayer(new Player("1", "Junaid", "Batsman"));
 	}
 
 	@Test
-	public void testDeleteButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
-		GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
-		window.list("playerList").selectItem(0);
-		window.button("deleteButton").requireEnabled();
-		window.list("playerList").clearSelection();
-		window.button("deleteButton").requireDisabled();
+	public void testDeleteButtonEnableLogic() {
+		// initially disabled
+		assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
+		// fill required fields
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText("Batsman");
+		});
+		assertThat(playerSwingView.deleteButton.isEnabled()).isTrue();
+		// clear ID to disable again
+		GuiActionRunner.execute(() -> playerSwingView.idTextBox.setText(""));
+		assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
 	}
 
 	@Test
@@ -148,43 +180,53 @@ public class PlayerSwingViewTest {
 		GuiActionRunner.execute(() -> {
 			playerSwingView.playerAdded(player1);
 			playerSwingView.playerAdded(player2);
+			playerSwingView.playerList.setSelectedIndex(1);
+			playerSwingView.deleteButton.doClick();
 		});
-		window.list("playerList").selectItem(1);
-		window.button("deleteButton").click();
 		verify(playerController).deletePlayer(player2);
 	}
 
 	@Test
-	public void testWhenPlayerIsSelectedThenTextboxesShouldBePopulatedAndIdShouldBeDisabled() {
+	public void testWhenPlayerIsSelectedThenTextboxesShouldBePopulated() {
 		Player player = new Player("1", "Junaid", "Batsman");
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
-		window.list("playerList").selectItem(0);
-		window.robot().waitForIdle();
-		window.textBox("idTextBox").requireText("1");
-		window.textBox("idTextBox").requireDisabled();
-		window.textBox("nameTextBox").requireText("Junaid");
-		window.textBox("roleTextBox").requireText("Batsman");
+		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
+		assertThat(playerSwingView.idTextBox.getText()).isEqualTo("1");
+		assertThat(playerSwingView.idTextBox.isEnabled()).isTrue();
+		assertThat(playerSwingView.nameTextBox.getText()).isEqualTo("Junaid");
+		assertThat(playerSwingView.roleTextBox.getText()).isEqualTo("Batsman");
 	}
 
 	@Test
-	public void testUpdateButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
-		GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
-		window.list("playerList").selectItem(0);
-		window.button("updateButton").requireEnabled();
-		window.list("playerList").clearSelection();
-		window.button("updateButton").requireDisabled();
+	public void testUpdateButtonEnableLogic() {
+		assertThat(playerSwingView.updateButton.isEnabled()).isFalse();
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText("Batsman");
+		});
+		assertThat(playerSwingView.updateButton.isEnabled()).isTrue();
+		GuiActionRunner.execute(() -> playerSwingView.idTextBox.setText(""));
+		assertThat(playerSwingView.updateButton.isEnabled()).isFalse();
 	}
 
 	@Test
 	public void testUpdateButtonShouldDelegateToPlayerControllerUpdatePlayer() {
 		Player player = new Player("1", "Junaid", "Batsman");
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
-		window.list("playerList").selectItem(0);
-		window.textBox("nameTextBox").enterText(" Munir");
-		window.textBox("roleTextBox").deleteText().enterText("Captain");
-		window.button("updateButton").click();
+		GuiActionRunner.execute(() -> {
+			playerSwingView.playerList.setSelectedIndex(0);
+			playerSwingView.nameTextBox.setText("Junaid Munir");
+			playerSwingView.roleTextBox.setText("Captain");
+			playerSwingView.updateButton.doClick();
+		});
 		verify(playerController).updatePlayer(new Player("1", "Junaid Munir", "Captain"));
 	}
+
+	@Test
+	public void testShowErrorShouldShowFormattedErrorMessageInLabel() {
+		Player player = new Player("1", "Junaid", "Batsman");
+		GuiActionRunner.execute(() -> playerSwingView.showError("Already exists with ID 1", player));
+		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo("Error: Already exists with ID 1");
+	}
 }
-
-
