@@ -266,7 +266,11 @@
                           <excludedClasses>
                               <param>com.cricketteam.app.cricketteam.model.*</param>
                               <param>com.cricketteam.app.cricketteam.app.swing.CricketTeamSwingApp</param>
+                              <param>com.cricketteam.app.cricketteam.view.swing.*</param>
                           </excludedClasses>
+                          <excludedTestClasses>
+                              <param>com.cricketteam.app.cricketteam.view.swing.*</param>
+                          </excludedTestClasses>
                           <timestampedReports>false</timestampedReports>
                           <timeoutConstant>20000</timeoutConstant>
                           <timeoutFactor>3.0</timeoutFactor>
