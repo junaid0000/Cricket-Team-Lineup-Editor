@@ -155,11 +155,18 @@ public class PlayerSwingViewTest {
 	}
 
 	@Test
-	public void testDeleteButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
-		GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
-		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
+	public void testDeleteButtonEnableLogic() {
+		// initially disabled
+		assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
+		// fill required fields
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText("Batsman");
+		});
 		assertThat(playerSwingView.deleteButton.isEnabled()).isTrue();
-		GuiActionRunner.execute(() -> playerSwingView.playerList.clearSelection());
+		// clear ID to disable again
+		GuiActionRunner.execute(() -> playerSwingView.idTextBox.setText(""));
 		assertThat(playerSwingView.deleteButton.isEnabled()).isFalse();
 	}
 
@@ -177,22 +184,26 @@ public class PlayerSwingViewTest {
 	}
 
 	@Test
-	public void testWhenPlayerIsSelectedThenTextboxesShouldBePopulatedAndIdShouldBeDisabled() {
+	public void testWhenPlayerIsSelectedThenTextboxesShouldBePopulated() {
 		Player player = new Player("1", "Junaid", "Batsman");
 		GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
 		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
 		assertThat(playerSwingView.idTextBox.getText()).isEqualTo("1");
-		assertThat(playerSwingView.idTextBox.isEnabled()).isFalse();
+		assertThat(playerSwingView.idTextBox.isEnabled()).isTrue();
 		assertThat(playerSwingView.nameTextBox.getText()).isEqualTo("Junaid");
 		assertThat(playerSwingView.roleTextBox.getText()).isEqualTo("Batsman");
 	}
 
 	@Test
-	public void testUpdateButtonShouldBeEnabledOnlyWhenAPlayerIsSelected() {
-		GuiActionRunner.execute(() -> playerSwingView.playerAdded(new Player("1", "Junaid", "Batsman")));
-		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
+	public void testUpdateButtonEnableLogic() {
+		assertThat(playerSwingView.updateButton.isEnabled()).isFalse();
+		GuiActionRunner.execute(() -> {
+			playerSwingView.idTextBox.setText("1");
+			playerSwingView.nameTextBox.setText("Junaid");
+			playerSwingView.roleTextBox.setText("Batsman");
+		});
 		assertThat(playerSwingView.updateButton.isEnabled()).isTrue();
-		GuiActionRunner.execute(() -> playerSwingView.playerList.clearSelection());
+		GuiActionRunner.execute(() -> playerSwingView.idTextBox.setText(""));
 		assertThat(playerSwingView.updateButton.isEnabled()).isFalse();
 	}
 
