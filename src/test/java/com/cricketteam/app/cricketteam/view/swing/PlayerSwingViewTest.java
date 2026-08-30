@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.After;
-import org.junit.Before;
+import org.assertj.swing.junit.runner.GUITestRunner;
+import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -20,7 +20,8 @@ import com.cricketteam.app.cricketteam.model.Player;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PlayerSwingViewTest {
+@RunWith(GUITestRunner.class)
+public class PlayerSwingViewTest extends AssertJSwingJUnitTestCase {
 
 	private FrameFixture window;
 	private PlayerSwingView playerSwingView;
@@ -29,23 +30,23 @@ public class PlayerSwingViewTest {
 	private PlayerController playerController;
 	private AutoCloseable closeable;
 
-	@Before
-	public void onSetUp() {
+	@Override
+	protected void onSetUp() {
 		closeable = MockitoAnnotations.openMocks(this);
-		FailOnThreadViolationRepaintManager.install();
 		GuiActionRunner.execute(() -> {
 			playerSwingView = new PlayerSwingView();
 			playerSwingView.setPlayerController(playerController);
 			return playerSwingView;
 		});
-		window = new FrameFixture(playerSwingView);
+		window = new FrameFixture(robot(), playerSwingView);
 		window.show();
 	}
 
-	@After
-	public void onTearDown() throws Exception {
-		window.cleanUp();
-		closeable.close();
+	@Override
+	protected void onTearDown() throws Exception {
+		if (closeable != null) {
+			closeable.close();
+		}
 	}
 
 	private List<Player> getListModelContents() {

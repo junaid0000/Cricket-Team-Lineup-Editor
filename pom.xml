@@ -128,12 +128,16 @@
                   <useModulePath>false</useModulePath>
                   <argLine>
                       @{argLine}
+                      -Djava.awt.headless=false
+                      --add-opens=java.base/java.lang=ALL-UNNAMED
                       --add-opens=java.base/java.util=ALL-UNNAMED
                       --add-opens=java.desktop/sun.awt=ALL-UNNAMED
                       --add-opens=java.desktop/java.awt=ALL-UNNAMED
                       --add-opens=java.desktop/javax.swing=ALL-UNNAMED
                       --add-opens=java.desktop/javax.swing.text=ALL-UNNAMED
                       --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED
+                      --add-opens=java.desktop/java.awt.peer=ALL-UNNAMED
+                      --add-opens=java.desktop/sun.java2d=ALL-UNNAMED
                   </argLine>
                   <includes>
                       <include>**/*Test.java</include>
@@ -171,12 +175,16 @@
               <configuration>
                   <argLine>
                       @{argLine}
+                      -Djava.awt.headless=false
+                      --add-opens=java.base/java.lang=ALL-UNNAMED
                       --add-opens=java.base/java.util=ALL-UNNAMED
                       --add-opens=java.desktop/sun.awt=ALL-UNNAMED
                       --add-opens=java.desktop/java.awt=ALL-UNNAMED
                       --add-opens=java.desktop/javax.swing=ALL-UNNAMED
                       --add-opens=java.desktop/javax.swing.text=ALL-UNNAMED
                       --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED
+                      --add-opens=java.desktop/java.awt.peer=ALL-UNNAMED
+                      --add-opens=java.desktop/sun.java2d=ALL-UNNAMED
                   </argLine>
               </configuration>
               <executions>
