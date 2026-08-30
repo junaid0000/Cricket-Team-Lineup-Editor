@@ -130,6 +130,7 @@
                       @{argLine}
                       -Djava.awt.headless=false
                       --add-opens=java.base/java.lang=ALL-UNNAMED
+                      --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
                       --add-opens=java.base/java.util=ALL-UNNAMED
                       --add-opens=java.desktop/sun.awt=ALL-UNNAMED
                       --add-opens=java.desktop/java.awt=ALL-UNNAMED
@@ -177,6 +178,7 @@
                       @{argLine}
                       -Djava.awt.headless=false
                       --add-opens=java.base/java.lang=ALL-UNNAMED
+                      --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
                       --add-opens=java.base/java.util=ALL-UNNAMED
                       --add-opens=java.desktop/sun.awt=ALL-UNNAMED
                       --add-opens=java.desktop/java.awt=ALL-UNNAMED
@@ -282,14 +284,17 @@
                           <timestampedReports>false</timestampedReports>
                           <timeoutConstant>20000</timeoutConstant>
                           <timeoutFactor>3.0</timeoutFactor>
-                          <jvmArgs>
-                              <jvmArg>--add-opens=java.base/java.util=ALL-UNNAMED</jvmArg>
-                              <jvmArg>--add-opens=java.desktop/sun.awt=ALL-UNNAMED</jvmArg>
-                              <jvmArg>--add-opens=java.desktop/java.awt=ALL-UNNAMED</jvmArg>
-                              <jvmArg>--add-opens=java.desktop/javax.swing=ALL-UNNAMED</jvmArg>
-                              <jvmArg>--add-opens=java.desktop/javax.swing.text=ALL-UNNAMED</jvmArg>
-                              <jvmArg>--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED</jvmArg>
-                          </jvmArgs>
+                           <jvmArgs>
+                               <jvmArg>-Djava.awt.headless=false</jvmArg>
+                               <jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
+                               <jvmArg>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</jvmArg>
+                               <jvmArg>--add-opens=java.base/java.util=ALL-UNNAMED</jvmArg>
+                               <jvmArg>--add-opens=java.desktop/sun.awt=ALL-UNNAMED</jvmArg>
+                               <jvmArg>--add-opens=java.desktop/java.awt=ALL-UNNAMED</jvmArg>
+                               <jvmArg>--add-opens=java.desktop/javax.swing=ALL-UNNAMED</jvmArg>
+                               <jvmArg>--add-opens=java.desktop/javax.swing.text=ALL-UNNAMED</jvmArg>
+                               <jvmArg>--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED</jvmArg>
+                           </jvmArgs>
                       </configuration>
                       <executions>
                           <execution>
