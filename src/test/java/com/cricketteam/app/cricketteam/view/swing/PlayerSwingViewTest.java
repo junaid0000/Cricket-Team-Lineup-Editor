@@ -35,10 +35,10 @@ public class PlayerSwingViewTest extends AssertJSwingJUnitTestCase {
 	@Override
 	protected void onSetUp() {
 		closeable = MockitoAnnotations.openMocks(this);
-		GuiActionRunner.execute(() -> {
-			playerSwingView = new PlayerSwingView();
-			playerSwingView.setPlayerController(playerController);
-			return playerSwingView;
+		playerSwingView = GuiActionRunner.execute(() -> {
+			PlayerSwingView view = new PlayerSwingView();
+			view.setPlayerController(playerController);
+			return view;
 		});
 		window = new FrameFixture(robot(), playerSwingView);
 		window.show();
