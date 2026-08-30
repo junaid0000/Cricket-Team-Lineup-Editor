@@ -34,6 +34,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 	JList<Player> playerList;
 	DefaultListModel<Player> listModel;
 	JLabel errorMessageLabel;
+	DocumentListener btnEnabler;
 
 	private transient PlayerController playerController;
 
@@ -99,11 +100,9 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 			boolean isSelected = playerList.getSelectedIndex() != -1;
 			if (isSelected) {
 				Player selectedPlayer = playerList.getSelectedValue();
-				if (selectedPlayer != null) {
-					idTextBox.setText(selectedPlayer.getId());
-					nameTextBox.setText(selectedPlayer.getName());
-					roleTextBox.setText(selectedPlayer.getRole());
-				}
+				idTextBox.setText(selectedPlayer.getId());
+				nameTextBox.setText(selectedPlayer.getName());
+				roleTextBox.setText(selectedPlayer.getRole());
 			}
 			updateButtonStates();
 		});
@@ -117,7 +116,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 		add(panel, BorderLayout.CENTER);
 
-		DocumentListener btnEnabler = new DocumentListener() {
+		btnEnabler = new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				updateButtonStates();
@@ -184,7 +183,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 
 	@Override
 	public void showError(String message, Player player) {
-		errorMessageLabel.setText("Error: " + message);
+		showError(message);
 	}
 
 	private void updateButtonStates() {

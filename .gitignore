@@ -27,3 +27,6 @@ Target/
 # JVM crash logs
 hs_err_pid*
 replay_pid*
+
+# AssertJ Swing temporary output
+failed-gui-tests/
