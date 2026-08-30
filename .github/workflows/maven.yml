@@ -39,6 +39,7 @@ jobs:
         -Dsonar.organization=junaid0000
         -Dsonar.host.url=https://sonarcloud.io
         -Dsonar.projectKey=junaid0000_Cricket-Team-Lineup-Editor
+        -Dsonar.scanner.skipJreProvisioning=true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
