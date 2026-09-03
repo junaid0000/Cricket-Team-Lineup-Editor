@@ -32,7 +32,6 @@ replay_pid*
 failed-gui-tests/
 
 # IDE and OS files
-.settings/
 .idea/
 *.iml
 .DS_Store
