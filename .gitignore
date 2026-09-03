@@ -30,3 +30,10 @@ replay_pid*
 
 # AssertJ Swing temporary output
 failed-gui-tests/
+
+# IDE and OS files
+.settings/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

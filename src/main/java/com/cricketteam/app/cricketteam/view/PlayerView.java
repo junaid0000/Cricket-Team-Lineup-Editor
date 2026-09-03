@@ -9,6 +9,6 @@ public interface PlayerView {
 	void playerAdded(Player player);
 	void playerRemoved(Player player);
 	void playerUpdated(Player player);
-	    void showError(String message);
-    void showError(String message, Player player);
+	void showError(String message);
+	void showError(String message, Player player);
 }
