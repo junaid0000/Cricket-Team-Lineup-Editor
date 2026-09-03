@@ -34,7 +34,7 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 	JList<Player> playerList;
 	DefaultListModel<Player> listModel;
 	JLabel errorMessageLabel;
-	DocumentListener btnEnabler;
+	transient DocumentListener btnEnabler;
 
 	private transient PlayerController playerController;
 
