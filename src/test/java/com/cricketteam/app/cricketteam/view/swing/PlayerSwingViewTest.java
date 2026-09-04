@@ -111,6 +111,16 @@ public class PlayerSwingViewTest extends AssertJSwingJUnitTestCase {
 	}
 
 	@Test
+	public void testWhenPlayerIsSelectedAndTextboxesAreNonEmptyThenAddButtonShouldBeEnabled() {
+		Player player = new Player("1", "Junaid", "Batsman");
+		GuiActionRunner.execute(() -> {
+			playerSwingView.playerAdded(player);
+			playerSwingView.playerList.setSelectedIndex(0);
+		});
+		assertThat(playerSwingView.addButton.isEnabled()).isTrue();
+	}
+
+	@Test
 	public void testWhenEitherIdOrNameOrRoleAreBlankThenAddButtonShouldBeDisabled() {
 		GuiActionRunner.execute(() -> {
 			playerSwingView.idTextBox.setText("1");

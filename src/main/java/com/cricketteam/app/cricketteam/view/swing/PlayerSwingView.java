@@ -187,12 +187,11 @@ public class PlayerSwingView extends JFrame implements PlayerView {
 	}
 
 	private void updateButtonStates() {
-		boolean isSelected = playerList.getSelectedIndex() != -1;
 		boolean hasText = !idTextBox.getText().trim().isEmpty() &&
 				!nameTextBox.getText().trim().isEmpty() &&
 				!roleTextBox.getText().trim().isEmpty();
 
-		addButton.setEnabled(!isSelected && hasText);
+		addButton.setEnabled(hasText);
 		updateButton.setEnabled(hasText);
 		deleteButton.setEnabled(hasText);
 	}
