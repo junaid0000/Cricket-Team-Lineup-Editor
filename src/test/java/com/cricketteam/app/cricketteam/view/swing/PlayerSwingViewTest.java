@@ -274,4 +274,13 @@ public class PlayerSwingViewTest extends AssertJSwingJUnitTestCase {
 		GuiActionRunner.execute(() -> playerSwingView.playerUpdated(otherPlayer));
 		assertThat(playerSwingView.errorMessageLabel.getText()).isEqualTo(" ");
 	}
+
+	@Test
+	public void testWhenListSelectionIsClearedThenTextboxesShouldNotBeUpdated() {
+		Player player = new Player("1", "Junaid", "Batsman");
+		GuiActionRunner.execute(() -> playerSwingView.playerAdded(player));
+		GuiActionRunner.execute(() -> playerSwingView.playerList.setSelectedIndex(0));
+		GuiActionRunner.execute(() -> playerSwingView.playerList.clearSelection());
+		assertThat(playerSwingView.playerList.getSelectedIndex()).isEqualTo(-1);
+	}
 }
